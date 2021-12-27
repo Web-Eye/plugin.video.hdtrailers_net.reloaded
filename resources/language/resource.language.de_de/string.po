@@ -1,0 +1,53 @@
+# Kodi Media Center language file
+# Addon Name: Tagesschau
+# Addon id: plugin.video.tagesschau
+# Addon Provider: J.Schumacher, H.Saul, C.Prasch
+msgid ""
+msgstr ""
+"Project-Id-Version: XBMC Addons\n"
+"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Kodi Translation Team\n"
+"Language-Team: German (http://www.transifex.com/projects/p/xbmc-addons/language/de/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#30001"
+msgid "Preferred Quality"
+msgstr "Bevorzugte Qualität"
+
+msgctxt "#30002"
+msgid "Starting Page"
+msgstr "Startseite"
+
+msgctxt "#30100"
+msgid "Main Page"
+msgstr "Hauptseite"
+
+msgctxt "#30101"
+msgid "Latest Movies"
+msgstr "Aktuellste Filme"
+
+msgctxt "#30102"
+msgid "Library"
+msgstr "Mediathek"
+
+msgctxt "#30103"
+msgid "Most Watched"
+msgstr "Meist gesehen"
+
+msgctxt "#30104"
+msgid "Top Movies"
+msgstr "Top Filme"
+
+msgctxt "#30105"
+msgid "Opening This Week"
+msgstr "Diese Woche im Kino"
+
+msgctxt "#30106"
+msgid "Coming Soon"
+msgstr "Demnächst im Kino"

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+  <setting id="start_page" type="enum" label="30002" values="Home|Latest|Library|Most Watched|Top Movies|Opening This Week|Coming Soon" default="0" />
+  <setting id="quality" type="enum" label="30001" values="480p|720p|1080p" default="2" />
+</settings>
