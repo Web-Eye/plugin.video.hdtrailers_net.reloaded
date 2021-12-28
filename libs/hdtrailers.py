@@ -15,10 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys, urllib, urllib.parse, logging
-import xbmc, xbmcplugin, xbmcgui, xbmcaddon, xbmcvfs
+import sys, urllib, urllib.parse, logging, json
 
-from libs.hdtrailers_api import parseItemPage
+try:
+    import xbmc, xbmcplugin, xbmcgui, xbmcaddon, xbmcvfs
+except ImportError:
+    pass
+
+from libs.hdtrailers_api import HDTrailerAPI
 
 # -- Constants ----------------------------------------------
 ADDON_ID = 'plugin.video.hdtrailers_net.reloaded'
@@ -34,17 +38,38 @@ MOST_WATCHED = 'most_watched'
 TOP_MOVIES = 'top_movies'
 OPENING_THIS_WEEK = 'opening_this_week'
 COMING_SOON = 'coming_soon'
+NAVIGATIONS = 'navigations'
 
 # -- logger -----------------------------------------------
 logger = logging.getLogger("plugin.video.hdtrailers.reloaded.api")
 
 # -- Settings -----------------------------------------------
-addon = xbmcaddon.Addon(id=ADDON_ID)
-quality_id = addon.getSetting('quality')
-quality = ['480p', '720p', '1080p'][int(quality_id)]
-start_page_id = addon.getSetting('start_page')
+try:
+    addon = xbmcaddon.Addon(id=ADDON_ID)
+    quality_id = addon.getSetting('quality')
+    start_page_id = addon.getSetting('start_page')
+except NameError:
+    quality_id = 2
+    start_page_id = 1
 
-language = addon.getLocalizedString
+quality = ['480p', '720p', '1080p', 'Best'][int(quality_id)]
+start_page = [HOME, LATEST, LIBRARY, MOST_WATCHED, TOP_MOVIES, OPENING_THIS_WEEK, COMING_SOON][int(start_page_id)]
+
+try:
+    language = addon.getLocalizedString
+except NameError:
+    def language(id):
+        return {
+            30100: 'Home',
+            30101: 'Latest',
+            30102: 'Library',
+            30103: 'Most Watched',
+            30104: 'Top Movies',
+            30105: 'Opening This Week',
+            30106: 'Coming Soon',
+            30107: 'Navigations'
+        }[id]
+
 translations = {
     HOME:               language(30100),
     LATEST:             language(30101),
@@ -53,7 +78,9 @@ translations = {
     TOP_MOVIES:         language(30104),
     OPENING_THIS_WEEK:  language(30105),
     COMING_SOON:        language(30106),
+    NAVIGATIONS:        language(30107)
 }
+
 
 def AddItem(title, args):
     print("AddItem")
@@ -62,13 +89,16 @@ def AddItem(title, args):
 def AddDirectory(title, args, poster=None):
     url = 'plugin://' + ADDON_ID + '/?' + urllib.parse.urlencode(args)
     print(url)
-    li = xbmcgui.ListItem(str(title))
-    if poster is not None:
-        li.setArt({'thumb': poster})
-    else:
-        li.setArt({'thumb': DEFAULT_IMAGE_URL})
-    li.setProperty('Fanart_Image', FANART)
-    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=True)
+    try:
+        li = xbmcgui.ListItem(str(title))
+        if poster is not None:
+            li.setArt({'thumb': poster})
+        else:
+            li.setArt({'thumb': DEFAULT_IMAGE_URL})
+        li.setProperty('Fanart_Image', FANART)
+        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=True)
+    except NameError:
+        pass
 
 
 def PlayItem(url):
@@ -76,8 +106,9 @@ def PlayItem(url):
 
 
 def SetItemView(url):
-    print("SetItemView")
-    # items = parseitems(url)
+    url = urllib.parse.urljoin(BASE_URL, url)
+    API = HDTrailerAPI()
+    item = API.parseItemPage(url)
     # for item in items:
     #     AddItem(item.title, {poster: item.poster, plot: item.plot, method: 'play', url: item.url})
 
@@ -96,13 +127,23 @@ def SetListLibraryView(url):
     #     AddDirectory(item.title, {method: 'list', url: item.url})
 
 
+def SetNavView(url):
+    if url is not None:
+        items = json.loads(url)
+        for item in items:
+            AddDirectory(title=item.get('title'), args=BuildArgs('list', item.get('url')))
+
+
 def SetListView(url):
     url = urllib.parse.urljoin(BASE_URL, url)
-    items, navigation = parseItemPage(url)
-    # for item in items:
-    #     AddDirectory(title=item.title, poster=item.poster, args=BuildArgs('item', item.url))
-    # if navigation is not None:
-    #     pass
+    API = HDTrailerAPI()
+    items, navigation = API.parseItemsPage(url)
+
+    if items is not None:
+        for item in items:
+            AddDirectory(title=item.get('title'), poster=item.get('poster'), args=BuildArgs('item', item.get('url')))
+    if navigation is not None:
+        AddDirectory(title=translations[NAVIGATIONS], args=BuildArgs('nav', navigation))
 
 
 def BuildArgs(method, url):
@@ -130,7 +171,6 @@ def get_query_args(sargs):
 
 
 def hdtrailers():
-    start_page = HOME
 
     args = get_query_args(sys.argv[2])
     if args is None or args.__len__() == 0:
@@ -154,10 +194,14 @@ def hdtrailers():
     {
         'home': SetHomeView,
         'list': SetListView,
+        'nav': SetNavView,
         'list_library': SetListLibraryView,
         'list_most_watched': SetListMostWatchedView,
         'item': SetItemView,
         'play': PlayItem
     }[args.get('method')](args.get('url'))
 
-    xbmcplugin.endOfDirectory(int(sys.argv[1]))
+    try:
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+    except NameError:
+        pass
