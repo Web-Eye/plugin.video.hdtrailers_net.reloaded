@@ -107,8 +107,8 @@ def PlayItem(url):
 
 def SetItemView(url):
     url = urllib.parse.urljoin(BASE_URL, url)
-    API = HDTrailerAPI()
-    item = API.parseItemPage(url)
+    API = HDTrailerAPI(url, quality)
+    item = API.parseItemPage()
     # for item in items:
     #     AddItem(item.title, {poster: item.poster, plot: item.plot, method: 'play', url: item.url})
 
@@ -136,8 +136,8 @@ def SetNavView(url):
 
 def SetListView(url):
     url = urllib.parse.urljoin(BASE_URL, url)
-    API = HDTrailerAPI()
-    items, navigation = API.parseItemsPage(url)
+    API = HDTrailerAPI(url, quality)
+    items, navigation = API.parseItemsPage()
 
     if items is not None:
         for item in items:
