@@ -15,7 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from libs.hdtrailers import hdtrailers
+from libs.hdtrailers import hd_trailers
 
 if __name__ == '__main__':
-    hdtrailers()
+    hd_trailers()
+

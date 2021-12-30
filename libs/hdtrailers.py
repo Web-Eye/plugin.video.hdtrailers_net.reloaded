@@ -15,12 +15,36 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys, urllib, urllib.parse, logging, json
+import json
+import logging
+import sys
+import urllib
+import urllib.parse
 
 try:
-    import xbmc, xbmcplugin, xbmcgui, xbmcaddon, xbmcvfs
+    import xbmc
 except ImportError:
-    pass
+    import libs.emu.xbmc as xbmc
+
+try:
+    import xbmcplugin
+except ImportError:
+    import libs.emu.xbmcplugin as xbmcplugin
+
+try:
+    import xbmcgui
+except ImportError:
+    import libs.emu.xbmcgui as xbmcgui
+
+try:
+    import xbmcaddon
+except ImportError:
+    import libs.emu.xbmcaddon as xbmcaddon
+
+try:
+    import xbmcvfs
+except ImportError:
+    import libs.emu.xbmcvfs as xbmcvfs
 
 from libs.hdtrailers_api import HDTrailerAPI
 
@@ -44,31 +68,28 @@ NAVIGATIONS = 'navigations'
 logger = logging.getLogger("plugin.video.hdtrailers.reloaded.api")
 
 # -- Settings -----------------------------------------------
-try:
-    addon = xbmcaddon.Addon(id=ADDON_ID)
-    quality_id = addon.getSetting('quality')
-    start_page_id = addon.getSetting('start_page')
-except NameError:
-    quality_id = 2
-    start_page_id = 1
+addon = xbmcaddon.Addon(id=ADDON_ID)
+quality_id = addon.getSetting('quality')
+start_page_id = addon.getSetting('start_page')
+
 
 quality = ['480p', '720p', '1080p', 'Best'][int(quality_id)]
 start_page = [HOME, LATEST, LIBRARY, MOST_WATCHED, TOP_MOVIES, OPENING_THIS_WEEK, COMING_SOON][int(start_page_id)]
 
-try:
-    language = addon.getLocalizedString
-except NameError:
-    def language(id):
-        return {
-            30100: 'Home',
-            30101: 'Latest',
-            30102: 'Library',
-            30103: 'Most Watched',
-            30104: 'Top Movies',
-            30105: 'Opening This Week',
-            30106: 'Coming Soon',
-            30107: 'Navigations'
-        }[id]
+# try:
+language = addon.getLocalizedString
+# except NameError:
+#     def language(id):
+#         return {
+#             30100: 'Home',
+#             30101: 'Latest',
+#             30102: 'Library',
+#             30103: 'Most Watched',
+#             30104: 'Top Movies',
+#             30105: 'Opening This Week',
+#             30106: 'Coming Soon',
+#             30107: 'Navigations'
+#         }[id]
 
 translations = {
     HOME:               language(30100),
@@ -82,11 +103,12 @@ translations = {
 }
 
 
-def AddItem(title, args):
-    print("AddItem")
+def add_item(title, args):
+    pass
+    # TODO AddItem
 
 
-def AddDirectory(title, args, poster=None):
+def add_directory(title, args, poster=None):
     url = 'plugin://' + ADDON_ID + '/?' + urllib.parse.urlencode(args)
     print(url)
     try:
@@ -101,107 +123,108 @@ def AddDirectory(title, args, poster=None):
         pass
 
 
-def PlayItem(url):
-    print("PlayItem")
+def play_item(url):
+    pass
+    # TODO PlayItem
 
 
-def SetItemView(url):
+def set_item_view(url):
     url = urllib.parse.urljoin(BASE_URL, url)
-    API = HDTrailerAPI(url, quality)
-    item = API.parseItemPage()
+    api = HDTrailerAPI(url, quality)
+    item = api.parse_item_page()
+    # TODO SetItemView
     # for item in items:
     #     AddItem(item.title, {poster: item.poster, plot: item.plot, method: 'play', url: item.url})
 
 
-def SetListMostWatchedView(url):
-    print("SetListMostWatchedView")
+def set_list_most_watched_view(url):
+    pass
+    # TODO SetListMostWatchedView
     # items = parsemostwatched(url)
     # for item in items:
     #     AddDirectory(item.title, {method: 'list', url: item.url})
 
 
-def SetListLibraryView(url):
-    print("SetListLibraryView")
+def set_list_library_view(url):
+    pass
+    # TODO SetListLibraryView
     # items = parselibrary(url)
     # for item in items:
     #     AddDirectory(item.title, {method: 'list', url: item.url})
 
 
-def SetNavView(url):
+def set_nav_view(url):
     if url is not None:
         items = json.loads(url)
         for item in items:
-            AddDirectory(title=item.get('title'), args=BuildArgs('list', item.get('url')))
+            add_directory(title=item.get('title'), args=build_args('list', item.get('url')))
 
 
-def SetListView(url):
+def set_list_view(url):
     url = urllib.parse.urljoin(BASE_URL, url)
-    API = HDTrailerAPI(url, quality)
-    items, navigation = API.parseItemsPage()
+    api = HDTrailerAPI(url, quality)
+    items, navigation = api.parse_items_page()
 
     if items is not None:
         for item in items:
-            AddDirectory(title=item.get('title'), poster=item.get('poster'), args=BuildArgs('item', item.get('url')))
+            add_directory(title=item.get('title'), poster=item.get('poster'), args=build_args('item', item.get('url')))
     if navigation is not None:
-        AddDirectory(title=translations[NAVIGATIONS], args=BuildArgs('nav', navigation))
+        add_directory(title=translations[NAVIGATIONS], args=build_args('nav', navigation))
 
 
-def BuildArgs(method, url):
+def build_args(method, url):
     return {
         'method': method,
         'url': url
     }
 
 
-def SetHomeView(url):
-    AddDirectory(title=translations[LATEST], args=BuildArgs('list', '/page/1/'))
-    AddDirectory(title=translations[LIBRARY], args=BuildArgs('list_library', '/library/0/'))
-    AddDirectory(title=translations[MOST_WATCHED], args=BuildArgs('list_most_watched', '/most-watched/'))
-    AddDirectory(title=translations[TOP_MOVIES], args=BuildArgs('list', '/top-movies/'))
-    AddDirectory(title=translations[OPENING_THIS_WEEK], args=BuildArgs('list', '/opening-this-week/'))
-    AddDirectory(title=translations[COMING_SOON], args=BuildArgs('list', '/coming-soon/'))
+def set_home_view(url):
+    add_directory(title=translations[LATEST], args=build_args('list', '/page/1/'))
+    add_directory(title=translations[LIBRARY], args=build_args('list_library', '/library/0/'))
+    add_directory(title=translations[MOST_WATCHED], args=build_args('list_most_watched', '/most-watched/'))
+    add_directory(title=translations[TOP_MOVIES], args=build_args('list', '/top-movies/'))
+    add_directory(title=translations[OPENING_THIS_WEEK], args=build_args('list', '/opening-this-week/'))
+    add_directory(title=translations[COMING_SOON], args=build_args('list', '/coming-soon/'))
 
 
-def get_query_args(sargs):
-    args = urllib.parse.parse_qs(urllib.parse.urlparse(sargs).query)
+def get_query_args(s_args):
+    args = urllib.parse.parse_qs(urllib.parse.urlparse(s_args).query)
 
     for key in args:
         args[key] = args[key][0]
     return args
 
 
-def hdtrailers():
+def hd_trailers():
 
     args = get_query_args(sys.argv[2])
     if args is None or args.__len__() == 0:
         args = {
             HOME:
-                lambda: BuildArgs('home', ''),
+                lambda: build_args('home', ''),
             LATEST:
-                lambda: BuildArgs('list', '/page/1/'),
+                lambda: build_args('list', '/page/1/'),
             LIBRARY:
-                lambda: BuildArgs('list_library', '/library/0/'),
+                lambda: build_args('list_library', '/library/0/'),
             MOST_WATCHED:
-                lambda: BuildArgs('list_most_watched', '/most-watched/'),
+                lambda: build_args('list_most_watched', '/most-watched/'),
             TOP_MOVIES:
-                lambda: BuildArgs('list', '/top-movies/'),
+                lambda: build_args('list', '/top-movies/'),
             OPENING_THIS_WEEK:
-                lambda: BuildArgs('list', '/opening-this-week/'),
+                lambda: build_args('list', '/opening-this-week/'),
             COMING_SOON:
-                lambda: BuildArgs('list', '/coming-soon/')
+                lambda: build_args('list', '/coming-soon/')
         }[start_page]()
 
     {
-        'home': SetHomeView,
-        'list': SetListView,
-        'nav': SetNavView,
-        'list_library': SetListLibraryView,
-        'list_most_watched': SetListMostWatchedView,
-        'item': SetItemView,
-        'play': PlayItem
+        'home': set_home_view,
+        'list': set_list_view,
+        'nav': set_nav_view,
+        'list_library': set_list_library_view,
+        'list_most_watched': set_list_most_watched_view,
+        'item': set_item_view,
+        'play': play_item
     }[args.get('method')](args.get('url'))
 
-    try:
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
-    except NameError:
-        pass
+    xbmcplugin.endOfDirectory(int(sys.argv[1]))

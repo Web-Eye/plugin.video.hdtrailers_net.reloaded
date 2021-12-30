@@ -23,25 +23,25 @@ from decimal import Decimal
 logger = logging.getLogger("plugin.video.hdtrailers.reloaded.api")
 
 
-def get_content(url):
+def _get_content(url):
     page = requests.get(url)
     return BeautifulSoup(page.content, 'html.parser')
+
+
+def _getsize(value):
+    if 'MB' in value:
+        value = value.replace('MB', '')
+        d = Decimal(value)
+        return int(d * 1024 * 1024)
 
 
 class HDTrailerAPI:
 
     def __init__(self, url, quality):
-        self.__content = get_content(url)
+        self.__content = _get_content(url)
         self.__quality = quality
 
-    @staticmethod
-    def __getsize(value):
-        if 'MB' in value:
-            value = value.replace('MB', '')
-            d = Decimal(value)
-            return int(d * 1024 * 1024)
-
-    def parseItemsPage(self):
+    def parse_items_page(self):
         lst_items = []
         items = self.__content.find_all('td', class_='indexTableTrailerImage')
         if items is not None:
@@ -54,9 +54,9 @@ class HDTrailerAPI:
         lst_nav_items = []
         navigation = self.__content.find('div', class_='libraryLinks nav-links-top')
         if navigation is not None:
-            navItems = navigation.find_all('a', class_='startLink')
-            if navItems is not None:
-                for navItem in navItems:
+            nav_items = navigation.find_all('a', class_='startLink')
+            if nav_items is not None:
+                for navItem in nav_items:
                     page = navItem.getText()
                     if page.isnumeric():
                         page = 'Page ' + page
@@ -64,7 +64,7 @@ class HDTrailerAPI:
 
         return lst_items, json.dumps(lst_nav_items)
 
-    def parseItemPage(self):
+    def parse_item_page(self):
         title = ''
         plot = ''
         poster = ''
@@ -72,9 +72,9 @@ class HDTrailerAPI:
         info = self.__content.find('td', class_='topTableInfo')
         if info is not None:
             title = info.find('h1', class_='previewTitle').getText()
-            PlotBlock = info.find('p', class_='previewDescription')
-            if PlotBlock is not None:
-                plot = PlotBlock.find('span').getText()
+            plot_block = info.find('p', class_='previewDescription')
+            if plot_block is not None:
+                plot = plot_block.find('span').getText()
             poster = urllib.parse.urljoin("http:", info.find('img')['src'])
 
         link_block = self.__content.find('table', class_='bottomTable')
@@ -134,7 +134,7 @@ class HDTrailerAPI:
                         link_collection.append({'name': a_tag.getText(), 'url': a_tag['href']})
 
             elif link.name == 'td' and link.has_attr('class') and link['class'][0] == 'bottomTableFileSize':
-                size = self.__getsize(link.getText())
+                size = _getsize(link.getText())
                 if size is not None:
                     link_collection[i]['size'] = size
                     i += 1
