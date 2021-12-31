@@ -122,11 +122,6 @@ def addDirectory(title, args, poster=None):
         pass
 
 
-def playItem(url, tag=None):
-    pass
-    # TODO PlayItem
-
-
 def setItemView(url, tag=None):
     url = urllib.parse.urljoin(BASE_URL, url)
     API = HDTrailerAPI(url, quality)
@@ -236,8 +231,7 @@ def hd_trailers():
         'nav': setNavView,
         'list_library': setListLibraryView,
         'list_most_watched': setListMostWatchedView,
-        'item': setItemView,
-        'play': playItem
+        'item': setItemView
     }[method](url, tag)
 
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
