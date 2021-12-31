@@ -44,7 +44,7 @@ class HDTrailerAPI:
         self.__content = _getContent(url)
         self.__quality = quality
 
-    def parseItemsPage(self):
+    def getItems(self):
         lst_items = []
         items = self.__content.find_all('td', class_='indexTableTrailerImage')
         if items is not None:
@@ -54,6 +54,9 @@ class HDTrailerAPI:
                 poster = urllib.parse.urljoin("http:", image['src'])
                 lst_items.append({'title':  image['title'], 'poster': poster, 'url': link['href']})
 
+        return lst_items
+
+    def getNavigation(self):
         lst_nav_items = []
         navigation = self.__content.find('div', class_='libraryLinks nav-links-top')
         if navigation is not None:
@@ -65,9 +68,9 @@ class HDTrailerAPI:
                         page = 'Page ' + page
                     lst_nav_items.append({'title': page, 'url': navItem['href']})
 
-        return lst_items, json.dumps(lst_nav_items)
+        return json.dumps(lst_nav_items)
 
-    def parseItemPage(self):
+    def getItem(self):
         title = ''
         plot = ''
         poster = ''
