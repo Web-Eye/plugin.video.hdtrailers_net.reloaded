@@ -112,9 +112,9 @@ class HDTrailerAPI:
                     if self.__quality != 'Best':
                         link_collection = list(filter(lambda item: item['name'] == self.__quality, link_collection))
                     else:
-                        pass
+                        link_collection.reverse()
 
-                    if link_collection is not None and len(link_collection) == 0:
+                    if link_collection is not None and len(link_collection) != 0:
                         link_item = link_collection[0]
 
                     if link_item is not None:
@@ -152,24 +152,13 @@ class HDTrailerAPI:
             if self.__quality != 'Best':
                 link_collection = list(filter(lambda item: item['name'] == self.__quality, link_collection))
             else:
-                pass
+                link_collection.reverse()
 
-            if link_collection is not None and len(link_collection) == 0:
+            if link_collection is not None and len(link_collection) != 0:
                 link_item = link_collection[0]
 
             if link_item is not None:
                 trailer_collection.append({'name': trailer_name, 'date': trailer_date, 'trailer_type': trailer_type, 'link': link_item})
 
-
-        # links
-        # infolabels.video
-            # title
-            # plot (plotoutline)
-            # size
-            # date
-            # aired
-
         movie_item = {'title': title, 'plot': plot, 'poster': poster, 'trailers': trailer_collection}
-        print(movie_item)
-
         return movie_item

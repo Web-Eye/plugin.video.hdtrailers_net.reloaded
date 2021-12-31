@@ -60,6 +60,7 @@ addon = xbmcaddon.Addon(id=ADDON_ID)
 quality_id = addon.getSetting('quality')
 start_page_id = addon.getSetting('start_page')
 
+xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
 quality = ['480p', '720p', '1080p', 'Best'][int(quality_id)]
 start_page = [HOME, LATEST, LIBRARY, MOST_WATCHED, TOP_MOVIES, OPENING_THIS_WEEK, COMING_SOON][int(start_page_id)]
@@ -79,14 +80,36 @@ translations = {
 }
 
 
-def addItem(title, args):
-    pass
-    # TODO AddItem
+def addItem(title, plot, poster, trailer):
+
+    if trailer is not None:
+        link = trailer.get('link')
+        if link is not None:
+
+            tTitle = str(trailer.get('name'))
+            date = trailer.get('date')
+            url = link.get('url')
+            size = link.get('size')
+
+            li = xbmcgui.ListItem(tTitle)
+            if poster is not None:
+                li.setArt({'thumb': poster})
+            else:
+                li.setArt({'thumb': DEFAULT_IMAGE_URL})
+            li.setProperty('Fanart_Image', FANART)
+            li.setProperty('IsPlayable', 'true')
+
+            li.setInfo(type="Video", infoLabels={"Title": tTitle,
+                                                 "Plot": str(plot),
+                                                 "Size": size,
+                                                 "Date": date,
+                                                 "Aired": date})
+
+            xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=False)
 
 
 def addDirectory(title, args, poster=None):
     url = 'plugin://' + ADDON_ID + '/?' + urllib.parse.urlencode(args)
-    print(url)
     try:
         li = xbmcgui.ListItem(str(title))
         if poster is not None:
@@ -108,9 +131,16 @@ def setItemView(url, tag=None):
     url = urllib.parse.urljoin(BASE_URL, url)
     API = HDTrailerAPI(url, quality)
     item = API.getItem()
-    # TODO SetItemView
-    # for item in items:
-    #     AddItem(item.title, {poster: item.poster, plot: item.plot, method: 'play', url: item.url})
+
+    trailers = item.get('trailers')
+
+    if trailers is not None:
+        title = item.get('title')
+        plot = item.get('plot')
+        poster = item.get('poster')
+
+        for trailer in trailers:
+            addItem(title, plot, poster, trailer)
 
 
 def setListMostWatchedView(url, tag=None):

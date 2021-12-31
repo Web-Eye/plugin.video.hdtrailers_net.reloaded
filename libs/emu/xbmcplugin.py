@@ -5,3 +5,6 @@ def addDirectoryItem(handle, url, listitem, isFolder):
 def endOfDirectory(arg):
     print(f'endOfDirectory({arg})')
 
+
+def setContent(arg, value):
+    print(f'setContent({arg}, {value})')
