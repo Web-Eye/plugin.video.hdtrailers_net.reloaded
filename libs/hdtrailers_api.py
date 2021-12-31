@@ -66,6 +66,10 @@ class HDTrailerAPI:
                     page = navItem.getText()
                     if page.isnumeric():
                         page = 'Page ' + page
+                    elif 'Prev' in page:
+                        page = 'Previous'
+                    elif 'Next' in page:
+                        page = 'Next'
                     lst_nav_items.append({'title': page, 'url': navItem['href']})
 
         return json.dumps(lst_nav_items)
