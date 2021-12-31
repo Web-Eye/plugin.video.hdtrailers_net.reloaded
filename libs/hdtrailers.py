@@ -40,7 +40,7 @@ from libs.hdtrailers_api import HDTrailerAPI
 ADDON_ID = 'plugin.video.hdtrailers_net.reloaded'
 BASE_URL = 'http://www.hd-trailers.net/'
 
-FANART = ''  # xbmcvfs.translatePath('special://home/addons/' + ADDON_ID + '/resources/assets/fanart.jpg')
+FANART = xbmcvfs.translatePath('special://home/addons/' + ADDON_ID + '/resources/assets/fanart.png')
 DEFAULT_IMAGE_URL = ''
 
 HOME = 'home'
@@ -201,6 +201,8 @@ def get_query_args(s_args):
 
 
 def hd_trailers():
+
+    xbmcplugin.setPluginFanart(int(sys.argv[1]), FANART)
 
     args = get_query_args(sys.argv[2])
 
