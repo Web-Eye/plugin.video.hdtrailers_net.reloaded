@@ -8,3 +8,9 @@ def endOfDirectory(arg):
 
 def setContent(arg, value):
     print(f'setContent({arg}, {value})')
+
+
+def setPluginFanart(arg, value):
+    print(f'setPluginFanart({arg}, {value})')
+
+
