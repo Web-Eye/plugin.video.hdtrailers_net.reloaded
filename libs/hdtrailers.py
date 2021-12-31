@@ -99,12 +99,12 @@ def addDirectory(title, args, poster=None):
         pass
 
 
-def playItem(url):
+def playItem(url, tag=None):
     pass
     # TODO PlayItem
 
 
-def setItemView(url):
+def setItemView(url, tag=None):
     url = urllib.parse.urljoin(BASE_URL, url)
     API = HDTrailerAPI(url, quality)
     item = API.getItem()
@@ -113,7 +113,7 @@ def setItemView(url):
     #     AddItem(item.title, {poster: item.poster, plot: item.plot, method: 'play', url: item.url})
 
 
-def setListMostWatchedView(url):
+def setListMostWatchedView(url, tag=None):
     pass
     # TODO setItemView
     # items = parsemostwatched(url)
@@ -121,7 +121,7 @@ def setListMostWatchedView(url):
     #     AddDirectory(item.title, {method: 'list', url: item.url})
 
 
-def setListLibraryView(url):
+def setListLibraryView(url, tag=None):
     pass
     # TODO SetListLibraryView
     # items = parselibrary(url)
@@ -129,14 +129,14 @@ def setListLibraryView(url):
     #     AddDirectory(item.title, {method: 'list', url: item.url})
 
 
-def setNavView(url):
-    if url is not None:
-        items = json.loads(url)
+def setNavView(url=None, tag=None):
+    if tag is not None:
+        items = json.loads(tag)
         for item in items:
             addDirectory(title=item.get('title'), args=buildArgs('list', item.get('url')))
 
 
-def setListView(url):
+def setListView(url, tag=None):
     url = urllib.parse.urljoin(BASE_URL, url)
     API = HDTrailerAPI(url, quality)
     items = API.getItems()
@@ -147,17 +147,18 @@ def setListView(url):
 
     navigation = API.getNavigation()
     if navigation is not None:
-        addDirectory(title=translations[NAVIGATIONS], args=buildArgs('nav', navigation))
+        addDirectory(title=translations[NAVIGATIONS], args=buildArgs('nav', tag=navigation))
 
 
-def buildArgs(method, url):
+def buildArgs(method, url=None, tag=None):
     return {
         'method': method,
-        'url': url
+        'url': url,
+        'tag': tag
     }
 
 
-def set_home_view(url):
+def setHomeView(url, tag=None):
     addDirectory(title=translations[LATEST], args=buildArgs('list', '/page/1/'))
     addDirectory(title=translations[LIBRARY], args=buildArgs('list_library', '/library/0/'))
     addDirectory(title=translations[MOST_WATCHED], args=buildArgs('list_most_watched', '/most-watched/'))
@@ -195,14 +196,18 @@ def hd_trailers():
                 lambda: buildArgs('list', '/coming-soon/')
         }[start_page]()
 
+    method = args.get('method')
+    url = args.get('url')
+    tag = args.get('tag')
+
     {
-        'home': set_home_view,
+        'home': setHomeView,
         'list': setListView,
         'nav': setNavView,
         'list_library': setListLibraryView,
         'list_most_watched': setListMostWatchedView,
         'item': setItemView,
         'play': playItem
-    }[args.get('method')](args.get('url'))
+    }[method](url, tag)
 
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
