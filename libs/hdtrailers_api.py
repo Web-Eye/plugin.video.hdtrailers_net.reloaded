@@ -15,20 +15,23 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import logging, requests, json, urllib.parse
-from bs4 import BeautifulSoup
+import json
+import logging
+import requests
+import urllib.parse
 from decimal import Decimal
+from bs4 import BeautifulSoup
 
 # -- logger -----------------------------------------------
-logger = logging.getLogger("plugin.video.hdtrailers.reloaded.api")
+logger = logging.getLogger('plugin.video.hdtrailers.reloaded.api')
 
 
-def _get_content(url):
+def _getContent(url):
     page = requests.get(url)
     return BeautifulSoup(page.content, 'html.parser')
 
 
-def _getsize(value):
+def _getSize(value):
     if 'MB' in value:
         value = value.replace('MB', '')
         d = Decimal(value)
@@ -38,10 +41,10 @@ def _getsize(value):
 class HDTrailerAPI:
 
     def __init__(self, url, quality):
-        self.__content = _get_content(url)
+        self.__content = _getContent(url)
         self.__quality = quality
 
-    def parse_items_page(self):
+    def parseItemsPage(self):
         lst_items = []
         items = self.__content.find_all('td', class_='indexTableTrailerImage')
         if items is not None:
@@ -64,7 +67,7 @@ class HDTrailerAPI:
 
         return lst_items, json.dumps(lst_nav_items)
 
-    def parse_item_page(self):
+    def parseItemPage(self):
         title = ''
         plot = ''
         poster = ''
@@ -134,7 +137,7 @@ class HDTrailerAPI:
                         link_collection.append({'name': a_tag.getText(), 'url': a_tag['href']})
 
             elif link.name == 'td' and link.has_attr('class') and link['class'][0] == 'bottomTableFileSize':
-                size = _getsize(link.getText())
+                size = _getSize(link.getText())
                 if size is not None:
                     link_collection[i]['size'] = size
                     i += 1
