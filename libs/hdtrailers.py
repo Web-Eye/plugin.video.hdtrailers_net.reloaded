@@ -23,27 +23,15 @@ import urllib.parse
 
 try:
     import xbmc
-except ImportError:
-    import libs.emu.xbmc as xbmc
-
-try:
     import xbmcplugin
-except ImportError:
-    import libs.emu.xbmcplugin as xbmcplugin
-
-try:
     import xbmcgui
-except ImportError:
-    import libs.emu.xbmcgui as xbmcgui
-
-try:
     import xbmcaddon
-except ImportError:
-    import libs.emu.xbmcaddon as xbmcaddon
-
-try:
     import xbmcvfs
 except ImportError:
+    import libs.emu.xbmc as xbmc
+    import libs.emu.xbmcplugin as xbmcplugin
+    import libs.emu.xbmcgui as xbmcgui
+    import libs.emu.xbmcaddon as xbmcaddon
     import libs.emu.xbmcvfs as xbmcvfs
 
 from libs.hdtrailers_api import HDTrailerAPI
