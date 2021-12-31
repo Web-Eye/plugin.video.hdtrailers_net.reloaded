@@ -203,23 +203,25 @@ def get_query_args(s_args):
 def hd_trailers():
 
     args = get_query_args(sys.argv[2])
+
     if args is None or args.__len__() == 0:
-        args = {
-            HOME:
-                lambda: buildArgs('home', ''),
-            LATEST:
-                lambda: buildArgs('list', '/page/1/'),
-            LIBRARY:
-                lambda: buildArgs('list_library', '/library/0/'),
-            MOST_WATCHED:
-                lambda: buildArgs('list_most_watched', '/most-watched/'),
-            TOP_MOVIES:
-                lambda: buildArgs('list', '/top-movies/'),
-            OPENING_THIS_WEEK:
-                lambda: buildArgs('list', '/opening-this-week/'),
-            COMING_SOON:
-                lambda: buildArgs('list', '/coming-soon/')
-        }[start_page]()
+        args = buildArgs('home')
+        # args = {
+        #     HOME:
+        #         lambda: buildArgs('home', ''),
+        #     LATEST:
+        #         lambda: buildArgs('list', '/page/1/'),
+        #     LIBRARY:
+        #         lambda: buildArgs('list_library', '/library/0/'),
+        #     MOST_WATCHED:
+        #         lambda: buildArgs('list_most_watched', '/most-watched/'),
+        #     TOP_MOVIES:
+        #         lambda: buildArgs('list', '/top-movies/'),
+        #     OPENING_THIS_WEEK:
+        #         lambda: buildArgs('list', '/opening-this-week/'),
+        #     COMING_SOON:
+        #         lambda: buildArgs('list', '/coming-soon/')
+        # }[start_page]()
 
     method = args.get('method')
     url = args.get('url')
