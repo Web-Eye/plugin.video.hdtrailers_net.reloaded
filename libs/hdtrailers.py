@@ -40,7 +40,9 @@ from libs.hdtrailers_api import HDTrailerAPI
 ADDON_ID = 'plugin.video.hdtrailers_net.reloaded'
 BASE_URL = 'http://www.hd-trailers.net/'
 
+ADDONTHUMB = xbmcvfs.translatePath('special://home/addons/' + ADDON_ID + '/resources/assets/icon.png')
 FANART = xbmcvfs.translatePath('special://home/addons/' + ADDON_ID + '/resources/assets/fanart.png')
+NAVART = xbmcvfs.translatePath('special://home/addons/' + ADDON_ID + '/resources/assets/menu.png')
 DEFAULT_IMAGE_URL = ''
 
 HOME = 'home'
@@ -172,7 +174,7 @@ def setListView(url, tag=None):
 
     navigation = API.getNavigation()
     if navigation is not None:
-        addDirectory(title=translations[NAVIGATIONS], args=buildArgs('nav', tag=navigation))
+        addDirectory(title=translations[NAVIGATIONS], poster=NAVART, args=buildArgs('nav', tag=navigation))
 
 
 def buildArgs(method, url=None, tag=None):
@@ -184,12 +186,12 @@ def buildArgs(method, url=None, tag=None):
 
 
 def setHomeView(url, tag=None):
-    addDirectory(title=translations[LATEST], args=buildArgs('list', '/page/1/'))
-    addDirectory(title=translations[LIBRARY], args=buildArgs('list_library', '/library/0/'))
-    addDirectory(title=translations[MOST_WATCHED], args=buildArgs('list_most_watched', '/most-watched/'))
-    addDirectory(title=translations[TOP_MOVIES], args=buildArgs('list', '/top-movies/'))
-    addDirectory(title=translations[OPENING_THIS_WEEK], args=buildArgs('list', '/opening-this-week/'))
-    addDirectory(title=translations[COMING_SOON], args=buildArgs('list', '/coming-soon/'))
+    addDirectory(title=translations[LATEST], poster=ADDONTHUMB, args=buildArgs('list', '/page/1/'))
+    addDirectory(title=translations[LIBRARY], poster=ADDONTHUMB, args=buildArgs('list_library', '/library/0/'))
+    addDirectory(title=translations[MOST_WATCHED], poster=ADDONTHUMB, args=buildArgs('list_most_watched', '/most-watched/'))
+    addDirectory(title=translations[TOP_MOVIES], poster=ADDONTHUMB, args=buildArgs('list', '/top-movies/'))
+    addDirectory(title=translations[OPENING_THIS_WEEK], poster=ADDONTHUMB, args=buildArgs('list', '/opening-this-week/'))
+    addDirectory(title=translations[COMING_SOON], poster=ADDONTHUMB, args=buildArgs('list', '/coming-soon/'))
 
 
 def get_query_args(s_args):
