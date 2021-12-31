@@ -106,8 +106,8 @@ def playItem(url):
 
 def setItemView(url):
     url = urllib.parse.urljoin(BASE_URL, url)
-    api = HDTrailerAPI(url, quality)
-    item = api.getItem()
+    API = HDTrailerAPI(url, quality)
+    item = API.getItem()
     # TODO SetItemView
     # for item in items:
     #     AddItem(item.title, {poster: item.poster, plot: item.plot, method: 'play', url: item.url})
@@ -138,14 +138,14 @@ def setNavView(url):
 
 def setListView(url):
     url = urllib.parse.urljoin(BASE_URL, url)
-    api = HDTrailerAPI(url, quality)
-    items = api.getItems()
+    API = HDTrailerAPI(url, quality)
+    items = API.getItems()
 
     if items is not None:
         for item in items:
             addDirectory(title=item.get('title'), poster=item.get('poster'), args=buildArgs('item', item.get('url')))
 
-    navigation = api.getNavigation()
+    navigation = API.getNavigation()
     if navigation is not None:
         addDirectory(title=translations[NAVIGATIONS], args=buildArgs('nav', navigation))
 
