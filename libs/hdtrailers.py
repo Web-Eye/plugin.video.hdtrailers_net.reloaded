@@ -142,7 +142,7 @@ def setItemView(url, tag=None):
 
 def setListMostWatchedView(url, tag=None):
     pass
-    # TODO setItemView
+    # TODO setListMostWatchedView
     # items = parsemostwatched(url)
     # for item in items:
     #     AddDirectory(item.title, {method: 'list', url: item.url})

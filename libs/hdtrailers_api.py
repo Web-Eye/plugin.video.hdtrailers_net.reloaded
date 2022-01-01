@@ -51,8 +51,9 @@ class HDTrailerAPI:
             for item in items:
                 link = item.find('a')
                 image = link.find('img', class_='indexTableTrailerImage')
-                poster = urllib.parse.urljoin("http:", image['src'])
-                lst_items.append({'title':  image['title'], 'poster': poster, 'url': link['href']})
+                if image is not None:
+                    poster = urllib.parse.urljoin("http:", image['src'])
+                    lst_items.append({'title':  image['title'], 'poster': poster, 'url': link['href']})
 
         return lst_items
 
@@ -72,7 +73,10 @@ class HDTrailerAPI:
                         page = 'Next'
                     lst_nav_items.append({'title': page, 'url': navItem['href']})
 
-        return json.dumps(lst_nav_items)
+        if len(lst_nav_items) > 0:
+            return json.dumps(lst_nav_items)
+
+        return None
 
     def getItem(self):
         title = ''
