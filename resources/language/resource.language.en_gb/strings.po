@@ -33,25 +33,29 @@ msgid "Latest Movies"
 msgstr ""
 
 msgctxt "#30102"
-msgid ""
+msgid "Library"
 msgstr ""
 
 msgctxt "#30103"
-msgid ""
+msgid "Most Watched (This Week)"
 msgstr ""
 
 msgctxt "#30104"
-msgid ""
+msgid "Most Watched (Today)"
 msgstr ""
 
 msgctxt "#30105"
-msgid "Opening This Week"
+msgid "Top Movies"
 msgstr ""
 
 msgctxt "#30106"
-msgid "Coming Soon"
+msgid "Opening This Week"
 msgstr ""
 
 msgctxt "#30107"
+msgid "Coming Soon"
+msgstr ""
+
+msgctxt "#30108"
 msgid "Navigations"
 msgstr ""

@@ -37,21 +37,25 @@ msgid "Library"
 msgstr "Mediathek"
 
 msgctxt "#30103"
-msgid "Most Watched"
-msgstr "Meist gesehen"
+msgid "Most Watched (This Week)"
+msgstr "Meist gesehen (Diese Woche)"
 
 msgctxt "#30104"
+msgid "Most Watched (Today)"
+msgstr "Meist gesehen (Heute)"
+
+msgctxt "#30105"
 msgid "Top Movies"
 msgstr "Top Filme"
 
-msgctxt "#30105"
+msgctxt "#30106"
 msgid "Opening This Week"
 msgstr "Diese Woche im Kino"
 
-msgctxt "#30106"
+msgctxt "#30107"
 msgid "Coming Soon"
 msgstr "Demnächst im Kino"
 
-msgctxt "#30107"
+msgctxt "#30108"
 msgid "Navigations"
 msgstr "Navigation"

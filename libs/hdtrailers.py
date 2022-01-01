@@ -48,7 +48,8 @@ DEFAULT_IMAGE_URL = ''
 HOME = 'home'
 LATEST = 'latest'
 LIBRARY = 'library'
-MOST_WATCHED = 'most_watched'
+MOST_WATCHED_WEEK = 'most_watched_week'
+MOST_WATCHED_TODAY = 'most_watched_today'
 TOP_MOVIES = 'top_movies'
 OPENING_THIS_WEEK = 'opening_this_week'
 COMING_SOON = 'coming_soon'
@@ -60,12 +61,12 @@ logger = logging.getLogger("plugin.video.hdtrailers.reloaded.api")
 # -- Settings -----------------------------------------------
 addon = xbmcaddon.Addon(id=ADDON_ID)
 quality_id = addon.getSetting('quality')
-start_page_id = addon.getSetting('start_page')
+# start_page_id = addon.getSetting('start_page')
 
 xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
 quality = ['480p', '720p', '1080p', 'Best'][int(quality_id)]
-start_page = [HOME, LATEST, LIBRARY, MOST_WATCHED, TOP_MOVIES, OPENING_THIS_WEEK, COMING_SOON][int(start_page_id)]
+# start_page = [HOME, LATEST, LIBRARY, MOST_WATCHED_WEEK, MOST_WATCHED_TODAY, TOP_MOVIES, OPENING_THIS_WEEK, COMING_SOON][int(start_page_id)]
 
 
 language = addon.getLocalizedString
@@ -74,11 +75,12 @@ translations = {
     HOME:               language(30100),
     LATEST:             language(30101),
     LIBRARY:            language(30102),
-    MOST_WATCHED:       language(30103),
-    TOP_MOVIES:         language(30104),
-    OPENING_THIS_WEEK:  language(30105),
-    COMING_SOON:        language(30106),
-    NAVIGATIONS:        language(30107)
+    MOST_WATCHED_WEEK:  language(30103),
+    MOST_WATCHED_TODAY: language(30104),
+    TOP_MOVIES:         language(30105),
+    OPENING_THIS_WEEK:  language(30106),
+    COMING_SOON:        language(30107),
+    NAVIGATIONS:        language(30108)
 }
 
 
@@ -188,7 +190,10 @@ def buildArgs(method, url=None, tag=None):
 def setHomeView(url, tag=None):
     addDirectory(title=translations[LATEST], poster=ADDONTHUMB, args=buildArgs('list', '/page/1/'))
     addDirectory(title=translations[LIBRARY], poster=ADDONTHUMB, args=buildArgs('list_library', '/library/0/'))
-    addDirectory(title=translations[MOST_WATCHED], poster=ADDONTHUMB, args=buildArgs('list_most_watched', '/most-watched/'))
+    addDirectory(title=translations[MOST_WATCHED_WEEK], poster=ADDONTHUMB,
+                 args=buildArgs('list_most_watched', '/most-watched/', 'Week'))
+    addDirectory(title=translations[MOST_WATCHED_TODAY], poster=ADDONTHUMB,
+                 args=buildArgs('list_most_watched', '/most-watched/', 'Today'))
     addDirectory(title=translations[TOP_MOVIES], poster=ADDONTHUMB, args=buildArgs('list', '/top-movies/'))
     addDirectory(title=translations[OPENING_THIS_WEEK], poster=ADDONTHUMB, args=buildArgs('list', '/opening-this-week/'))
     addDirectory(title=translations[COMING_SOON], poster=ADDONTHUMB, args=buildArgs('list', '/coming-soon/'))
