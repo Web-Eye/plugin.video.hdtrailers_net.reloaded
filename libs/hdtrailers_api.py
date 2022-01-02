@@ -115,7 +115,8 @@ class HDTrailerAPI:
                 if len(link_collection) > 0:
 
                     link_item = None
-                    link_collection = list(filter(lambda item: 'yahoo-redir.php' not in item['url'], link_collection))
+                    link_collection = list(filter(lambda item: 'yahoo-redir.php' not in item['url'] and
+                                                               'avideos.5min.com' not in item['url'], link_collection))
 
                     if self.__quality != 'Best':
                         link_collection = list(filter(lambda item: item['name'] == self.__quality, link_collection))
@@ -170,3 +171,30 @@ class HDTrailerAPI:
 
         movie_item = {'title': title, 'plot': plot, 'poster': poster, 'trailers': trailer_collection}
         return movie_item
+
+    def getMostWatched(self, _tag):
+        lst_items = []
+        indexTable = self.__content.find('table', class_='indexTable')
+        if indexTable is not None:
+            trItems = indexTable.find_all(lambda tag: tag.name == 'tr')
+            if trItems is not None:
+                matched = False
+                for trItem in trItems:
+                    if trItem.find('th', class_='mainHeading'):
+                        if not matched:
+                            divBlock = trItem.find(lambda tag: tag.name == 'div' and _tag in tag.getText())
+                            matched = (divBlock is not None)
+                        else:
+                            break
+
+                    elif matched:
+                        items = trItem.find_all('td', class_='indexTableTrailerImage')
+                        if items is not None:
+                            for item in items:
+                                link = item.find('a')
+                                image = link.find('img', class_='indexTableTrailerImage')
+                                if image is not None:
+                                    poster = urllib.parse.urljoin("http:", image['src'])
+                                    lst_items.append({'title': image['title'], 'poster': poster, 'url': link['href']})
+
+        return lst_items
