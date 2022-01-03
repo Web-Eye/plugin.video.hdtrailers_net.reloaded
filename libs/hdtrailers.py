@@ -152,11 +152,14 @@ def setListMostWatchedView(url, tag=None):
 
 
 def setListLibraryView(url, tag=None):
-    pass
-    # TODO SetListLibraryView
-    # items = parselibrary(url)
-    # for item in items:
-    #     AddDirectory(item.title, {method: 'list', url: item.url})
+    url = urllib.parse.urljoin(BASE_URL, url)
+    API = HDTrailerAPI(url, quality)
+    items = API.getLibraryLinks()
+    if items is not None:
+        for item in items:
+            addDirectory(title=item.get('title'), args=buildArgs('list', item.get('url')))
+
+
 
 
 def setNavView(url=None, tag=None):

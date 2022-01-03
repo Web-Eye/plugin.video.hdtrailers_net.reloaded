@@ -198,3 +198,14 @@ class HDTrailerAPI:
                                     lst_items.append({'title': image['title'], 'poster': poster, 'url': link['href']})
 
         return lst_items
+
+    def getLibraryLinks(self):
+        lst_items = []
+        item = self.__content.find('div', class_='libraryLinks')
+        if item is not None:
+            items = item.find_all(lambda tag: tag.name == 'a' and tag.getText() != 'On' and tag.getText() != 'Off')
+            if items is not None:
+                for link in items:
+                    lst_items.append({'title': link.getText(), 'url': link['href']})
+
+        return lst_items
