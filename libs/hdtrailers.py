@@ -160,6 +160,13 @@ def setListLibraryView(url, tag=None):
             addDirectory(title=item.get('title'), args=buildArgs('list', item.get('url')))
 
 
+# def setLibraryItemsView(url, tag=None):
+#     url = urllib.parse.urljoin(BASE_URL, url)
+#     API = HDTrailerAPI(url, quality)
+#     items = API.getLibraryItems()
+#     if items is not None:
+#         for item in items:
+#             addDirectory(title=item.get('title'), poster=item.get('poster'), args=buildArgs('item', item.get('url')))
 
 
 def setNavView(url=None, tag=None):
@@ -193,7 +200,7 @@ def buildArgs(method, url=None, tag=None):
 
 def setHomeView(url, tag=None):
     addDirectory(title=translations[LATEST], poster=ADDONTHUMB, args=buildArgs('list', '/page/1/'))
-    addDirectory(title=translations[LIBRARY], poster=ADDONTHUMB, args=buildArgs('list_library', '/library/0/'))
+    addDirectory(title=translations[LIBRARY], poster=ADDONTHUMB, args=buildArgs('list_library', '/poster-library/0/'))
     addDirectory(title=translations[MOST_WATCHED_WEEK], poster=ADDONTHUMB,
                  args=buildArgs('list_most_watched', '/most-watched/', 'Week'))
     addDirectory(title=translations[MOST_WATCHED_TODAY], poster=ADDONTHUMB,

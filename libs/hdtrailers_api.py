@@ -44,18 +44,21 @@ class HDTrailerAPI:
         self.__content = _getContent(url)
         self.__quality = quality
 
-    def getItems(self):
+    def __getItems(self, content):
         lst_items = []
-        items = self.__content.find_all('td', class_='indexTableTrailerImage')
+        items = content.find_all('td', class_='indexTableTrailerImage')
         if items is not None:
             for item in items:
                 link = item.find('a')
                 image = link.find('img', class_='indexTableTrailerImage')
                 if image is not None:
                     poster = urllib.parse.urljoin("http:", image['src'])
-                    lst_items.append({'title':  image['title'], 'poster': poster, 'url': link['href']})
+                    lst_items.append({'title': image['title'], 'poster': poster, 'url': link['href']})
 
         return lst_items
+
+    def getItems(self):
+        return self.__getItems(self.__content)
 
     def getNavigation(self):
         lst_nav_items = []
@@ -105,7 +108,6 @@ class HDTrailerAPI:
         i = 0
 
         for link in link_content:
-            # print(link)
             if link.name == 'td' and link.has_attr('class') and link['class'][0] == 'bottomTableSet':
                 trailer_type_block = link.find('h2')
                 if trailer_type_block is not None:
@@ -188,14 +190,7 @@ class HDTrailerAPI:
                             break
 
                     elif matched:
-                        items = trItem.find_all('td', class_='indexTableTrailerImage')
-                        if items is not None:
-                            for item in items:
-                                link = item.find('a')
-                                image = link.find('img', class_='indexTableTrailerImage')
-                                if image is not None:
-                                    poster = urllib.parse.urljoin("http:", image['src'])
-                                    lst_items.append({'title': image['title'], 'poster': poster, 'url': link['href']})
+                        lst_items.extend(self.__getItems(trItem))
 
         return lst_items
 
@@ -209,3 +204,4 @@ class HDTrailerAPI:
                     lst_items.append({'title': link.getText(), 'url': link['href']})
 
         return lst_items
+
