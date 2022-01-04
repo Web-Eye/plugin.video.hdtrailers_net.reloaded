@@ -189,9 +189,9 @@ def setListView(url, tag=None):
         for item in items:
             plot = None
             if extract_plot and tag != 'library':
-                url = urllib.parse.urljoin(BASE_URL, item.get('url'))
-                API = HDTrailerAPI(url, quality)
-                _item = API.getItem()
+                _url = urllib.parse.urljoin(BASE_URL, item.get('url'))
+                _API = HDTrailerAPI(_url, quality)
+                _item = _API.getItem()
                 if _item is not None:
                     plot = _item.get('plot')
 
