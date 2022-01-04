@@ -34,7 +34,7 @@ msgstr "Neuste Filme"
 
 msgctxt "#30102"
 msgid "Library"
-msgstr "Mediathek"
+msgstr "Bibliothek"
 
 msgctxt "#30103"
 msgid "Most Watched (This Week)"
