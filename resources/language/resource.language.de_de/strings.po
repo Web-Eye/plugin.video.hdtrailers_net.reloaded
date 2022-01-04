@@ -63,3 +63,7 @@ msgstr "Navigation"
 msgctxt "#30109"
 msgid "Main"
 msgstr "Main"
+
+msgctxt "#30110"
+msgid "Extract plot in list views"
+msgstr "Plot in Listenansichten extrahieren"

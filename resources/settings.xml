@@ -3,5 +3,6 @@
   <category label="30109">
 <!--  <setting id="start_page" type="enum" label="30002" values="Home|Latest|Library|Most Watched|Top Movies|Opening This Week|Coming Soon" default="0" />-->
     <setting id="quality" type="enum" label="30001" values="480p|720p|1080p|Best" default="2" />
+    <setting id="extract_plot" type="bool" label="30110" default="false"/>
   </category>
 </settings>
