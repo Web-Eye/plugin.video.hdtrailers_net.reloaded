@@ -19,7 +19,7 @@ import json
 import logging
 import requests
 import urllib.parse
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from bs4 import BeautifulSoup
 
 # -- logger -----------------------------------------------
@@ -34,8 +34,11 @@ def _getContent(url):
 def _getSize(value):
     if 'MB' in value:
         value = value.replace('MB', '')
-        d = Decimal(value)
-        return int(d * 1024 * 1024)
+        try:
+            d = Decimal(value)
+            return int(d * 1024 * 1024)
+        except InvalidOperation:
+            return 0
 
 
 class HDTrailerAPI:

@@ -62,6 +62,7 @@ logger = logging.getLogger("plugin.video.hdtrailers.reloaded.api")
 addon = xbmcaddon.Addon(id=ADDON_ID)
 quality_id = addon.getSetting('quality')
 # start_page_id = addon.getSetting('start_page')
+extract_plot = True
 
 xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
@@ -112,7 +113,7 @@ def addItem(title, plot, poster, trailer):
             xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=False)
 
 
-def addDirectory(title, args, poster=None):
+def addDirectory(title, args, poster=None, plot=None):
     url = 'plugin://' + ADDON_ID + '/?' + urllib.parse.urlencode(args)
     try:
         li = xbmcgui.ListItem(str(title))
@@ -121,6 +122,10 @@ def addDirectory(title, args, poster=None):
         else:
             li.setArt({'thumb': DEFAULT_IMAGE_URL})
         li.setProperty('Fanart_Image', FANART)
+
+        if plot is not None:
+            li.setInfo(type="Video", infoLabels={"Plot": str(plot)})
+
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=True)
     except NameError:
         pass
@@ -148,7 +153,15 @@ def setListMostWatchedView(url, tag=None):
     items = API.getMostWatched(tag)
     if items is not None:
         for item in items:
-            addDirectory(title=item.get('title'), poster=item.get('poster'), args=buildArgs('item', item.get('url')))
+            plot = None
+            if extract_plot and tag != 'lbrary':
+                url = urllib.parse.urljoin(BASE_URL, item.get('url'))
+                API = HDTrailerAPI(url, quality)
+                _item = API.getItem()
+                if _item is not None:
+                    plot = _item.get('plot')
+
+            addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=buildArgs('item', item.get('url')))
 
 
 def setListLibraryView(url, tag=None):
@@ -157,16 +170,7 @@ def setListLibraryView(url, tag=None):
     items = API.getLibraryLinks()
     if items is not None:
         for item in items:
-            addDirectory(title=item.get('title'), args=buildArgs('list', item.get('url')))
-
-
-# def setLibraryItemsView(url, tag=None):
-#     url = urllib.parse.urljoin(BASE_URL, url)
-#     API = HDTrailerAPI(url, quality)
-#     items = API.getLibraryItems()
-#     if items is not None:
-#         for item in items:
-#             addDirectory(title=item.get('title'), poster=item.get('poster'), args=buildArgs('item', item.get('url')))
+            addDirectory(title=item.get('title'), args=buildArgs('list', item.get('url'), 'library'))
 
 
 def setNavView(url=None, tag=None):
@@ -183,7 +187,15 @@ def setListView(url, tag=None):
 
     if items is not None:
         for item in items:
-            addDirectory(title=item.get('title'), poster=item.get('poster'), args=buildArgs('item', item.get('url')))
+            plot = None
+            if extract_plot and tag != 'library':
+                _url = urllib.parse.urljoin(BASE_URL, item.get('url'))
+                _API = HDTrailerAPI(_url, quality)
+                _item = _API.getItem()
+                if _item is not None:
+                    plot = _item.get('plot')
+
+            addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=buildArgs('item', item.get('url')))
 
     navigation = API.getNavigation()
     if navigation is not None:
