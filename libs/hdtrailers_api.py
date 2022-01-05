@@ -84,6 +84,16 @@ class HDTrailerAPI:
 
         return None
 
+    def __getPlot(self, info):
+        if info is not None:
+            plot_block = info.find('p', class_='previewDescription')
+            if plot_block is not None:
+                return plot_block.find('span').getText()
+
+    def getPlot(self):
+        info = self.__content.find('td', class_='topTableInfo')
+        return self.__getPlot(info)
+
     def getItem(self):
         title = ''
         plot = ''
@@ -92,9 +102,7 @@ class HDTrailerAPI:
         info = self.__content.find('td', class_='topTableInfo')
         if info is not None:
             title = info.find('h1', class_='previewTitle').getText()
-            plot_block = info.find('p', class_='previewDescription')
-            if plot_block is not None:
-                plot = plot_block.find('span').getText()
+            plot = self.__getPlot(info)
             poster = urllib.parse.urljoin("http:", info.find('img')['src'])
 
         link_block = self.__content.find('table', class_='bottomTable')
