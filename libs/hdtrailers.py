@@ -60,15 +60,7 @@ logger = logging.getLogger("plugin.video.hdtrailers.reloaded.api")
 
 # -- Settings -----------------------------------------------
 addon = xbmcaddon.Addon(id=ADDON_ID)
-quality_id = addon.getSetting('quality')
-# start_page_id = addon.getSetting('start_page')
-extract_plot = addon.getSetting('extract_plot')
-
 xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-
-quality = ['480p', '720p', '1080p', 'Best'][int(quality_id)]
-# start_page = [HOME, LATEST, LIBRARY, MOST_WATCHED_WEEK, MOST_WATCHED_TODAY, TOP_MOVIES, OPENING_THIS_WEEK, COMING_SOON][int(start_page_id)]
-
 
 language = addon.getLocalizedString
 
@@ -133,7 +125,8 @@ def addDirectory(title, args, poster=None, plot=None):
 
 def setItemView(url, tag=None):
     url = urllib.parse.urljoin(BASE_URL, url)
-    API = HDTrailerAPI(url, quality)
+    quality_id = addon.getSetting('quality')
+    API = HDTrailerAPI(url, quality_id)
     item = API.getItem()
 
     trailers = item.get('trailers')
@@ -149,14 +142,15 @@ def setItemView(url, tag=None):
 
 def setListMostWatchedView(url, tag=None):
     url = urllib.parse.urljoin(BASE_URL, url)
-    API = HDTrailerAPI(url, quality)
+    API = HDTrailerAPI(url)
     items = API.getMostWatched(tag)
     if items is not None:
+        extract_plot = addon.getSetting('extract_plot')
         for item in items:
             plot = None
-            if extract_plot and tag != 'lbrary':
+            if extract_plot == 'true' and tag != 'lbrary':
                 url = urllib.parse.urljoin(BASE_URL, item.get('url'))
-                API = HDTrailerAPI(url, quality)
+                API = HDTrailerAPI(url)
                 plot = API.getPlot()
 
             addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=buildArgs('item', item.get('url')))
@@ -164,7 +158,7 @@ def setListMostWatchedView(url, tag=None):
 
 def setListLibraryView(url, tag=None):
     url = urllib.parse.urljoin(BASE_URL, url)
-    API = HDTrailerAPI(url, quality)
+    API = HDTrailerAPI(url)
     items = API.getLibraryLinks()
     if items is not None:
         for item in items:
@@ -180,15 +174,16 @@ def setNavView(url=None, tag=None):
 
 def setListView(url, tag=None):
     url = urllib.parse.urljoin(BASE_URL, url)
-    API = HDTrailerAPI(url, quality)
+    API = HDTrailerAPI(url)
     items = API.getItems()
 
     if items is not None:
+        extract_plot = addon.getSetting('extract_plot')
         for item in items:
             plot = None
-            if extract_plot and tag != 'library':
+            if extract_plot == 'true' and tag != 'lbrary':
                 _url = urllib.parse.urljoin(BASE_URL, item.get('url'))
-                _API = HDTrailerAPI(_url, quality)
+                _API = HDTrailerAPI(_url)
                 plot = _API.getPlot()
 
             addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=buildArgs('item', item.get('url')))
@@ -234,22 +229,6 @@ def hd_trailers():
 
     if args is None or args.__len__() == 0:
         args = buildArgs('home')
-        # args = {
-        #     HOME:
-        #         lambda: buildArgs('home', ''),
-        #     LATEST:
-        #         lambda: buildArgs('list', '/page/1/'),
-        #     LIBRARY:
-        #         lambda: buildArgs('list_library', '/library/0/'),
-        #     MOST_WATCHED:
-        #         lambda: buildArgs('list_most_watched', '/most-watched/'),
-        #     TOP_MOVIES:
-        #         lambda: buildArgs('list', '/top-movies/'),
-        #     OPENING_THIS_WEEK:
-        #         lambda: buildArgs('list', '/opening-this-week/'),
-        #     COMING_SOON:
-        #         lambda: buildArgs('list', '/coming-soon/')
-        # }[start_page]()
 
     method = args.get('method')
     url = args.get('url')

@@ -43,9 +43,10 @@ def _getSize(value):
 
 class HDTrailerAPI:
 
-    def __init__(self, url, quality):
+    def __init__(self, url, quality_id=None):
         self.__content = _getContent(url)
-        self.__quality = quality
+        if quality_id is not None:
+            self.__quality = ['480p', '720p', '1080p', 'Best'][int(quality_id)]
 
     def __getItems(self, content):
         lst_items = []
@@ -129,6 +130,8 @@ class HDTrailerAPI:
 
                     link_item = None
                     link_collection = list(filter(lambda item: 'yahoo-redir.php' not in item['url'] and
+                                                               'www.youtube.com' not in item['url'] and
+                                                               'cdn.videos.dolimg.com' not in item['url'] and
                                                                'avideos.5min.com' not in item['url'], link_collection))
 
                     if self.__quality != 'Best':
