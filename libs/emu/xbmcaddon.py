@@ -20,11 +20,15 @@ class Addon:
     def __init__(self, id):
         pass
 
+
     def getSetting(self, name):
         if name == 'quality':
             return 2
         elif name == 'start_page':
             return 1
+        elif name == 'extract_plot':
+            return True
+
 
     def getLocalizedString(self, id):
         return 'dummy'

@@ -62,7 +62,7 @@ logger = logging.getLogger("plugin.video.hdtrailers.reloaded.api")
 addon = xbmcaddon.Addon(id=ADDON_ID)
 quality_id = addon.getSetting('quality')
 # start_page_id = addon.getSetting('start_page')
-extract_plot = True
+extract_plot = addon.getSetting('extract_plot')
 
 xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
