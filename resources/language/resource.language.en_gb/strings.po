@@ -1,7 +1,7 @@
 # Kodi Media Center language file
-# Addon Name: Tagesschau
-# Addon id: plugin.video.tagesschau
-# Addon Provider: J.Schumacher, H.Saul, C.Prasch
+# Addon Name: HDTrailers (reloaded)
+# Addon id: plugin.video.hdtrailers_net.reloaded
+# Addon Provider: WebEye
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Addons\n"
