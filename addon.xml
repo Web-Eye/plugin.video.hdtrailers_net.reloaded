@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
     id="plugin.video.hdtrailers_net.reloaded"
-    version="1.0.0"
+    version="1.0.1"
     name="HD-Trailers.net (reloaded)"
     provider-name="WebEye">
   <requires>
@@ -27,11 +27,9 @@
     <assets>
       <icon>resources/assets/icon.png</icon>
       <fanart>resources/assets/fanart.png</fanart>
-<!--
       <screenshot>resources/assets/screenshot_1.png</screenshot>
       <screenshot>resources/assets/screenshot_2.png</screenshot>
       <screenshot>resources/assets/screenshot_3.png</screenshot>
--->
     </assets>
     <news>
     </news>
