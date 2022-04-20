@@ -15,6 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-def translatePath(arg):
-    print(f'translatePath({arg})')
+import xbmcvfs
 
+
+class Utils:
+
+    @staticmethod
+    def translatePath(value):
+        return xbmcvfs.translatePath(value)

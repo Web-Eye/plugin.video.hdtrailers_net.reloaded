@@ -15,19 +15,29 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-def addDirectoryItem(handle, url, listitem, isFolder):
-    print(f'addDirectoryItem({handle}, {url}, {listitem}, {isFolder})')
+import os
+
+import xbmcaddon
 
 
-def endOfDirectory(arg):
-    print(f'endOfDirectory({arg})')
+class Addon(xbmcaddon.Addon):
 
+    def __init__(self, id):
+        xbmcaddon.Addon.__init__(self, id)
+        self._debug = os.getenv('kodi_debug') is not None
 
-def setContent(arg, value):
-    print(f'setContent({arg}, {value})')
-
-
-def setPluginFanart(arg, value):
-    print(f'setPluginFanart({arg}, {value})')
-
+    def getSetting(self, name):
+        if not self._debug:
+            return xbmcaddon.Addon.getSetting(self, name)
+        else:
+            return {
+                'quality': '2',
+                'extract_plot': 'true',
+                'page_itemCount': '300',
+                'database_enabled': 'true',
+                'db_host': '192.168.132.143',
+                'db_port': '3306',
+                'db_username': 'kodi',
+                'db_password': 'kodi'
+            }[name]
 
