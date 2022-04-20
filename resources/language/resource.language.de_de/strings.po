@@ -67,3 +67,43 @@ msgstr "Allgemein"
 msgctxt "#30110"
 msgid "Extract plot in list views"
 msgstr "Plot in Listenansichten extrahieren"
+
+msgctxt "#30111"
+msgid "480p"
+msgstr ""
+
+msgctxt "#30112"
+msgid "720p"
+msgstr ""
+
+msgctxt "#30113"
+msgid "1080p"
+msgstr ""
+
+msgctxt "#30114"
+msgid "Best"
+msgstr ""
+
+msgctxt "#30115"
+msgid "Database"
+msgstr "Datenbank"
+
+msgctxt "#30116"
+msgid "enabled"
+msgstr "Aktiviert"
+
+msgctxt "#30117"
+msgid "Host"
+msgstr "Host"
+
+msgctxt "#30118"
+msgid "Port"
+msgstr "Port"
+
+msgctxt "#30119"
+msgid "Username"
+msgstr "Benutzername"
+
+msgctxt "#30120"
+msgid "Password"
+msgstr "Passwort"

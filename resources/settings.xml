@@ -1,8 +1,83 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-  <category label="30109">
-<!--  <setting id="start_page" type="enum" label="30002" values="Home|Latest|Library|Most Watched|Top Movies|Opening This Week|Coming Soon" default="0" />-->
-    <setting id="quality" type="enum" label="30001" values="480p|720p|1080p|Best" default="2" />
-    <setting id="extract_plot" type="bool" label="30110" default="false"/>
-  </category>
+<settings version="1">
+    <section id="plugin.video.hdtrailers_net.reloaded">
+        <category id="main" label="30109">
+            <group id="1">
+                <setting id="quality" label="30001" type="integer" >
+                    <default>2</default>
+                    <constraints>
+                        <options>
+                            <option label="30111">0</option>
+                            <option label="30112">1</option>
+                            <option label="30113">2</option>
+                            <option label="30114">3</option>
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="integer"/>
+                </setting>
+                <setting id="extract_plot" type="boolean" label="30110" help="">
+                    <dependencies>
+                        <dependency type="enable" setting="database_enabled">false</dependency>
+                    </dependencies>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+        </category>
+        <category id="database" label="30115">
+            <group id="3">
+                <setting id="database_enabled" type="boolean" label="30116" help="">
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+            <group id="4">
+                <setting id="db_host" type="string" label="30117" help="">
+                    <dependencies>
+                        <dependency type="enable" setting="database_enabled">true</dependency>
+                    </dependencies>
+                    <default>192.168.132.1</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="ip">
+                        <heading>30117</heading>
+                    </control>
+                </setting>
+                <setting id="db_port" type="integer" label="30118" help="">
+                    <dependencies>
+                        <dependency type="enable" setting="database_enabled">true</dependency>
+                    </dependencies>
+                    <default>3306</default>
+                    <control type="edit" format="integer">
+                        <heading>30118</heading>
+                    </control>
+                </setting>
+                <setting id="db_username" type="string" label="30119" help="">
+                    <dependencies>
+                        <dependency type="enable" setting="database_enabled">true</dependency>
+                    </dependencies>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>30119</heading>
+                    </control>
+                </setting>
+                <setting id="db_password" type="string" label="30120" help="">
+                    <dependencies>
+                        <dependency type="enable" setting="database_enabled">true</dependency>
+                    </dependencies>
+                    <default/>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>30120</heading>
+                        <hidden>true</hidden>
+                    </control>
+                </setting>
+            </group>
+        </category>
+    </section>
 </settings>
