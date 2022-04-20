@@ -107,3 +107,31 @@ msgstr "Benutzername"
 msgctxt "#30120"
 msgid "Password"
 msgstr "Passwort"
+
+msgctxt "#30121"
+msgid "Items per Page"
+msgstr "Einträge pro Seite"
+
+msgctxt "#30122"
+msgid "5"
+msgstr ""
+
+msgctxt "#30123"
+msgid "10"
+msgstr ""
+
+msgctxt "#30124"
+msgid "15"
+msgstr ""
+
+msgctxt "#30125"
+msgid "20"
+msgstr ""
+
+msgctxt "#30126"
+msgid "25"
+msgstr ""
+
+msgctxt "#30127"
+msgid "30"
+msgstr ""
