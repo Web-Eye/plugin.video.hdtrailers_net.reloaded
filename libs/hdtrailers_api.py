@@ -189,6 +189,7 @@ class HDTrailerAPI:
         return movie_item
 
     def getMostWatched(self, _tag):
+        _tag = _tag.upper()
         lst_items = []
         indexTable = self.__content.find('table', class_='indexTable')
         if indexTable is not None:
@@ -198,7 +199,7 @@ class HDTrailerAPI:
                 for trItem in trItems:
                     if trItem.find('th', class_='mainHeading'):
                         if not matched:
-                            divBlock = trItem.find(lambda tag: tag.name == 'div' and _tag in tag.getText())
+                            divBlock = trItem.find(lambda tag: tag.name == 'div' and _tag in tag.getText().upper())
                             matched = (divBlock is not None)
                         else:
                             break

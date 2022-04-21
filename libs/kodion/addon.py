@@ -18,13 +18,29 @@
 import os
 
 import xbmcaddon
+import xbmcvfs
 
 
 class Addon(xbmcaddon.Addon):
 
     def __init__(self, id):
+        self._id = id
         xbmcaddon.Addon.__init__(self, id)
         self._debug = os.getenv('kodi_debug') is not None
+
+    def getAddonInfo(self, name):
+        if name == 'navart':
+            return xbmcvfs.translatePath('special://home/addons/' + self._id + '/resources/assets/menu.png')
+
+        if not self._debug:
+            return xbmcaddon.Addon.getAddonInfo(name)
+        else:
+            if name == 'id':
+                return self._id
+            elif name == 'name':
+                return 'HDTrailers (reloaded)'
+            elif name == 'icon':
+                return xbmcvfs.translatePath('special://home/addons/' + self._id + '/resources/assets/icon.png')
 
     def getSetting(self, name):
         if not self._debug:
@@ -32,9 +48,9 @@ class Addon(xbmcaddon.Addon):
         else:
             return {
                 'quality': '2',
-                'extract_plot': 'true',
-                'page_itemCount': '300',
-                'database_enabled': 'true',
+                'extract_plot': 'false',
+                'page_itemCount': '20',
+                'database_enabled': 'false',
                 'db_host': '192.168.132.143',
                 'db_port': '3306',
                 'db_username': 'kodi',

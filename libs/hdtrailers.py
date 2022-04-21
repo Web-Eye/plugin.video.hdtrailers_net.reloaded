@@ -16,84 +16,58 @@
 #
 
 import json
-import logging
 import sys
 import urllib
 import urllib.parse
+from urllib.parse import urljoin
 
+from libs.kodion.addon import Addon
 from libs.database.database_api import DBAPI
-
-import xbmc
-import xbmcplugin
-import xbmcgui
-import xbmcaddon
-import xbmcvfs
-
-
+from libs.kodion.gui_manager import *
+from libs.translations import *
 from libs.hdtrailers_api import HDTrailerAPI
 
-# -- Constants ----------------------------------------------
-ADDON_ID = 'plugin.video.hdtrailers_net.reloaded'
-BASE_URL = 'http://www.hd-trailers.net/'
-
-ADDONTHUMB = xbmcvfs.translatePath('special://home/addons/' + ADDON_ID + '/resources/assets/icon.png')
-FANART = xbmcvfs.translatePath('special://home/addons/' + ADDON_ID + '/resources/assets/fanart.png')
-NAVART = xbmcvfs.translatePath('special://home/addons/' + ADDON_ID + '/resources/assets/menu.png')
-DEFAULT_IMAGE_URL = ''
-
-HOME = 'home'
-LATEST = 'latest'
-LIBRARY = 'library'
-MOST_WATCHED_WEEK = 'most_watched_week'
-MOST_WATCHED_TODAY = 'most_watched_today'
-TOP_MOVIES = 'top_movies'
-OPENING_THIS_WEEK = 'opening_this_week'
-COMING_SOON = 'coming_soon'
-NAVIGATIONS = 'navigations'
-
-# -- logger -----------------------------------------------
-logger = logging.getLogger("plugin.video.hdtrailers.reloaded.api")
-
-# -- Settings -----------------------------------------------
-addon = xbmcaddon.Addon(id=ADDON_ID)
-xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-
-quality_id = int(addon.getSetting('quality'))
-extract_plot = (addon.getSetting('extract_plot') == 'true')
-page_itemCount = int(addon.getSetting('page_itemCount'))
-
-db_enabled = (addon.getSetting('database_enabled') == 'true')
-db_config = None
-if db_enabled:
-    db_config = {
-        'host': addon.getSetting('db_host'),
-        'port': int(addon.getSetting('db_port')),
-        'user': addon.getSetting('db_username'),
-        'password': addon.getSetting('db_password'),
-        'database': 'KodiWebGrabber'
-    }
-    extract_plot = False
-
-language = addon.getLocalizedString
-
-translations = {
-    HOME:               language(30100),
-    LATEST:             language(30101),
-    LIBRARY:            language(30102),
-    MOST_WATCHED_WEEK:  language(30103),
-    MOST_WATCHED_TODAY: language(30104),
-    TOP_MOVIES:         language(30105),
-    OPENING_THIS_WEEK:  language(30106),
-    COMING_SOON:        language(30107),
-    NAVIGATIONS:        language(30108)
-}
 
 class HDTrailers:
 
     def __init__(self):
-        pass
 
-    def addItem(self, title, plot, poster, trailer):
+        # -- Constants ----------------------------------------------
+        self._ADDON_ID = 'plugin.video.hdtrailers_net.reloaded'
+
+        width = getScreenWidth()
+        addon = Addon(self._ADDON_ID)
+
+        self._NAME = addon.getAddonInfo('name')
+        self._FANART = addon.getAddonInfo('fanart')
+        self._ICON = addon.getAddonInfo('icon')
+        self._NAVART = addon.getAddonInfo('navart')
+        self._BASE_URL = 'http://www.hd-trailers.net/'
+        self._POSTERWIDTH = int(width / 3)
+        self._DEFAULT_IMAGE_URL = ''
+        self._t = Translations(addon)
+
+        # -- settings ----------------------------------------------
+        self._quality_id = int(addon.getSetting('quality'))
+        self._extract_plot = (addon.getSetting('extract_plot') == 'true')
+        self._page_itemCount = int(addon.getSetting('page_itemCount'))
+
+        self._db_enabled = (addon.getSetting('database_enabled') == 'true')
+        self._db_config = None
+        if self._db_enabled:
+            self._db_config = {
+                'host': addon.getSetting('db_host'),
+                'port': int(addon.getSetting('db_port')),
+                'user': addon.getSetting('db_username'),
+                'password': addon.getSetting('db_password'),
+                'database': 'KodiWebGrabber'
+            }
+            self._extract_plot = False
+
+        self._guiManager = GuiManager(sys.argv[1], self._ADDON_ID, self._DEFAULT_IMAGE_URL, self._FANART)
+        self._guiManager.setContent('movies')
+
+    def addItem(self, plot, poster, trailer):
 
         if trailer is not None:
             link = trailer.get('link')
@@ -101,143 +75,147 @@ class HDTrailers:
 
                 title = str(trailer.get('name'))
                 date = trailer.get('date')
-                url = link.get('url')
-                size = link.get('size')
 
-                li = xbmcgui.ListItem(title)
-                if poster is not None:
-                    li.setArt({'thumb': poster})
-                else:
-                    li.setArt({'thumb': DEFAULT_IMAGE_URL})
-                li.setProperty('Fanart_Image', FANART)
-                li.setProperty('IsPlayable', 'true')
+                infoLabels = {
+                    'Title': title,
+                    'Plot': str(plot),
+                    'Size': link.get('size'),
+                    'Date': date,
+                    'Aired': date
+                }
 
-                li.setInfo(type="Video", infoLabels={"Title": title,
-                                                     "Plot": str(plot),
-                                                     "Size": size,
-                                                     "Date": date,
-                                                     "Aired": date})
-
-                xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=False)
+                self._guiManager.addItem(title=title, url=link.get('url'), poster=poster, _type='video',
+                                         infoLabels=infoLabels)
 
     def addDirectory(self, title, args, poster=None, plot=None):
-        url = 'plugin://' + ADDON_ID + '/?' + urllib.parse.urlencode(args)
         try:
-            li = xbmcgui.ListItem(str(title))
-            if poster is not None:
-                li.setArt({'thumb': poster})
-            else:
-                li.setArt({'thumb': DEFAULT_IMAGE_URL})
-            li.setProperty('Fanart_Image', FANART)
+            if poster is None:
+                poster = self._DEFAULT_IMAGE_URL
+
+            infoLabels = {
+                'Title': title
+            }
 
             if plot is not None:
-                li.setInfo(type="Video", infoLabels={"Plot": str(plot)})
+                infoLabels['Plot'] = str(plot)
 
-            xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=True)
+            self._guiManager.addDirectory(title=title, poster=poster, fanArt=self._FANART, _type='Video',
+                                          infoLabels=infoLabels, args=args)
 
         except NameError:
             pass
 
-    def setItemView(self, url, tag=None):
-        url = urllib.parse.urljoin(BASE_URL, url)
-        API = HDTrailerAPI(url, quality_id)
+    def setItemView(self, param, tag=None):
+        url = self._getUrl(param)
+        API = HDTrailerAPI(url, self._quality_id)
         item = API.getItem()
 
         trailers = item.get('trailers')
+        plot = item.get('plot')
+        poster = item.get('poster')
 
         if trailers is not None:
-            title = item.get('title')
-            plot = item.get('plot')
-            poster = item.get('poster')
-
             for trailer in trailers:
-                addItem(title, plot, poster, trailer)
+                self.addItem(plot, poster, trailer)
 
-    def setListMostWatchedView(self, url, tag=None):
-        url = urllib.parse.urljoin(BASE_URL, url)
+    def setListMostWatchedView(self, param, tag=None):
+        url = self._getUrl('/most-watched/')
         API = HDTrailerAPI(url)
-        items = API.getMostWatched(tag)
+        items = API.getMostWatched(param)
         if items is not None:
             for item in items:
                 plot = None
-                if extract_plot == 'true' and tag != 'lbrary':
-                    url = urllib.parse.urljoin(BASE_URL, item.get('url'))
+                if self._extract_plot == 'true' and tag != 'library':
+                    url = urllib.parse.urljoin(self._BASE_URL, item.get('url'))
                     API = HDTrailerAPI(url)
                     plot = API.getPlot()
 
-                addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=buildArgs('item', item.get('url')))
+                self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=self._buildArgs('item', item.get('url')))
 
-    def setListLibraryView(self, url, tag=None):
-        if not db_enabled:
-            url = urllib.parse.urljoin(BASE_URL, url)
+    def setListLibraryView(self, param, tag=None):
+        if not self._db_enabled:
+            url = self._getUrl('/poster-library/0/')
             API = HDTrailerAPI(url)
             items = API.getLibraryLinks()
             if items is not None:
                 for item in items:
-                    addDirectory(title=item.get('title'), args=buildArgs('list', item.get('url'), 'library'))
+                    self.addDirectory(title=item.get('title'), args=self._buildArgs('list', 'URL', item.get('url')))
 
-    def setNavView(self, url=None, tag=None):
-        if tag is not None:
-            items = json.loads(tag)
+    def setNavView(self, param=None, tag=None):
+        if param is not None:
+            items = json.loads(param)
             for item in items:
-                addDirectory(title=item.get('title'), args=buildArgs('list', item.get('url')))
+                self.addDirectory(title=item.get('title'), args=self._buildArgs('list', 'URL', item.get('url')))
 
-    def setListView(self, url, tag=None):
-        if not db_enabled:
-            url = urllib.parse.urljoin(BASE_URL, url)
+    def setListView(self, param, tag=None):
+        if not self._db_enabled:
+            url = self._getListUrl(param, tag)
             API = HDTrailerAPI(url)
         else:
-            API = DBAPI(db_config, tag)
+            API = DBAPI(self._db_config, tag)
 
         items = API.getItems()
 
         if items is not None:
             for item in items:
                 plot = None
-                if extract_plot == 'true' and tag != 'library':
-                    _url = urllib.parse.urljoin(BASE_URL, item.get('url'))
+                if self._extract_plot and tag != 'library':
+                    _url = self._getUrl(item.get('url'))
                     _API = HDTrailerAPI(_url)
                     plot = _API.getPlot()
 
-                addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=buildArgs('item', item.get('url')))
+                self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=self._buildArgs('item', item.get('url')))
 
         navigation = API.getNavigation()
         if navigation is not None:
-            addDirectory(title=translations[NAVIGATIONS], poster=NAVART, args=buildArgs('nav', tag=navigation))
+            self.addDirectory(title=self._t.getString(NAVIGATIONS), poster=self._NAVART, args=self._buildArgs('nav', param=navigation))
 
-    def buildArgs(self, method, url=None, tag=None):
-        return {
-            'method': method,
-            'url': url,
-            'tag': tag
+    def setHomeView(self, param, tag):
+        self._guiManager.addDirectory(title=self._t.getString(LATEST), poster=self._ICON,
+                                      args=self._buildArgs('list', 'LATEST', 1))
+        self._guiManager.addDirectory(title=self._t.getString(LIBRARY), poster=self._ICON,
+                                      args=self._buildArgs('list_library'))
+        self._guiManager.addDirectory(title=self._t.getString(MOST_WATCHED_WEEK), poster=self._ICON,
+                                      args=self._buildArgs('list_most_watched', 'WEEK'))
+        self._guiManager.addDirectory(title=self._t.getString(MOST_WATCHED_TODAY), poster=self._ICON,
+                                      args=self._buildArgs('list_most_watched', 'TODAY'))
+        self._guiManager.addDirectory(title=self._t.getString(TOP_MOVIES), poster=self._ICON,
+                                      args=self._buildArgs('list', 'TOPTEN'))
+        self._guiManager.addDirectory(title=self._t.getString(OPENING_THIS_WEEK), poster=self._ICON,
+                                      args=self._buildArgs('list', 'OPENING'))
+        self._guiManager.addDirectory(title=self._t.getString(COMING_SOON), poster=self._ICON,
+                                      args=self._buildArgs('list', 'COMINGSOON'))
+
+    def _getUrl(self, url):
+        return urllib.parse.urljoin(self._BASE_URL, url)
+
+    def _getListUrl(self, param, tag):
+        return self._getUrl(
+            {
+                'LATEST': urljoin('/page/', str(tag) + "/"),
+                'URL': str(tag),
+                'TOPTEN': '/top-movies/',
+                'OPENING': '/opening-this-week/',
+                'COMINGSOON': '/coming-soon/'
+            }[param]
+        )
+
+    @staticmethod
+    def _buildArgs(method, param=None, tag=None):
+        retValue = {
+            'method': method
         }
 
-    def setHomeView(self, url, tag=None):
-        if not db_enabled:
-            addDirectory(title=translations[LATEST], poster=ADDONTHUMB, args=buildArgs('list', '/page/1/'))
-            addDirectory(title=translations[LIBRARY], poster=ADDONTHUMB, args=buildArgs('list_library', '/poster-library/0/'))
-            addDirectory(title=translations[MOST_WATCHED_WEEK], poster=ADDONTHUMB,
-                         args=buildArgs('list_most_watched', '/most-watched/', 'Week'))
-            addDirectory(title=translations[MOST_WATCHED_TODAY], poster=ADDONTHUMB,
-                         args=buildArgs('list_most_watched', '/most-watched/', 'Today'))
-            addDirectory(title=translations[TOP_MOVIES], poster=ADDONTHUMB, args=buildArgs('list', '/top-movies/'))
-            addDirectory(title=translations[OPENING_THIS_WEEK], poster=ADDONTHUMB, args=buildArgs('list', '/opening-this-week/'))
-            addDirectory(title=translations[COMING_SOON], poster=ADDONTHUMB, args=buildArgs('list', '/coming-soon/'))
+        if param is not None:
+            retValue['param'] = param
 
-        else:
-            addDirectory(title=translations[LATEST], poster=ADDONTHUMB, args=buildArgs('list', 'LATEST', 1))
-            addDirectory(title=translations[LIBRARY], poster=ADDONTHUMB,
-                         args=buildArgs('list_library'))
-            addDirectory(title=translations[MOST_WATCHED_WEEK], poster=ADDONTHUMB,
-                         args=buildArgs('list', 'MOSTWATCHEDWEEK'))
-            addDirectory(title=translations[MOST_WATCHED_TODAY], poster=ADDONTHUMB,
-                         args=buildArgs('list', 'MOSTWATCHEDTODAY'))
-            addDirectory(title=translations[TOP_MOVIES], poster=ADDONTHUMB, args=buildArgs('list', 'TOPTEN'))
-            addDirectory(title=translations[OPENING_THIS_WEEK], poster=ADDONTHUMB,
-                         args=buildArgs('list', 'OPENING'))
-            addDirectory(title=translations[COMING_SOON], poster=ADDONTHUMB, args=buildArgs('list', 'COMINGSOON'))
+        if tag is not None:
+            retValue['tag'] = tag
 
-    def get_query_args(self, s_args):
+        return retValue
+
+    @staticmethod
+    def _get_query_args(s_args):
         args = urllib.parse.parse_qs(urllib.parse.urlparse(s_args).query)
 
         for key in args:
@@ -246,15 +224,13 @@ class HDTrailers:
 
     def hd_trailers(self):
 
-        xbmcplugin.setPluginFanart(int(sys.argv[1]), FANART)
-
-        args = self.get_query_args(sys.argv[2])
+        args = self._get_query_args(sys.argv[2])
 
         if args is None or args.__len__() == 0:
-            args = self.buildArgs('home')
+            args = self._buildArgs('home')
 
         method = args.get('method')
-        url = args.get('url')
+        param = args.get('param')
         tag = args.get('tag')
 
         {
@@ -264,6 +240,6 @@ class HDTrailers:
             'list_library': self.setListLibraryView,
             'list_most_watched': self.setListMostWatchedView,
             'item': self.setItemView
-        }[method](url, tag)
+        }[method](param, tag)
 
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        self._guiManager.endOfDirectory()
