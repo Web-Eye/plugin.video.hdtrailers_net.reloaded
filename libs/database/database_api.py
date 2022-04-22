@@ -30,12 +30,6 @@ class DBAPI:
     def getNavigation(self):
         lst_nav_items = []
 
-        # if self._pageNumber > 1:
-        #     lst_nav_items.append({'title': 'First', 'tag': 1})
-        #
-        # if self._pageNumber > 2:
-        #     lst_nav_items.append({'title': 'Previous', 'tag': self._pageNumber - 1})
-
         query = {
             'project': 'HDTRAILERS'
         }
@@ -53,26 +47,20 @@ class DBAPI:
         if currentPage == firstPage:
             prevPage = None
 
-        # if currentPage < firstPage + 2:
-        #     firstPage = None
-
         if currentPage == lastPage:
             nextPage = None
-
-        # if currentPage > lastPage - 2:
-        #     lastPage = None
 
         if minPage < firstPage:
             minPage = firstPage
 
         if minPage == currentPage:
-            minPage = None
+            minPage = currentPage + 1
 
         if maxPage > lastPage:
             maxPage = lastPage
 
         if maxPage == currentPage:
-            maxPage = None
+            maxPage = currentPage - 1
 
         if minPage == firstPage:
             firstPage = None
@@ -86,16 +74,22 @@ class DBAPI:
         if lastPage == currentPage:
             lastPage = None
 
-        t = 0
+        if firstPage is not None:
+            lst_nav_items.append({'title': 'First', 'tag': firstPage})
 
-        # minPage = self._pageNumber - 4
-        # if minPage < 2:
-        #     minPage = 2
-        # if minPage >= self._pageNumber:
-        #     minPage = self._pageNumber
+        if prevPage is not None:
+            lst_nav_items.append({'title': 'Previous', 'tag': prevPage})
 
+        if minPage is not None and maxPage is not None:
+            for i in range(minPage, maxPage + 1):
+                if i != currentPage:
+                    lst_nav_items.append({'title': f'Page {i}', 'tag': i})
 
+        if nextPage is not None:
+            lst_nav_items.append({'title': 'Next', 'tag': nextPage})
 
+        if lastPage is not None:
+            lst_nav_items.append({'title': 'Last', 'tag': lastPage})
 
         if len(lst_nav_items) > 0:
             return json.dumps(lst_nav_items)
