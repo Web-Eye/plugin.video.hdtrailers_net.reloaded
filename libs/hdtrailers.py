@@ -106,8 +106,17 @@ class HDTrailers:
             pass
 
     def setItemView(self, param, tag=None):
-        url = self._getUrl(param)
-        API = HDTrailerAPI(url, self._quality_id)
+        API = None
+
+        if not self._db_enabled and param == 'URL':
+            url = self._getUrl(tag)
+            API = HDTrailerAPI(url, self._quality_id)
+
+        elif self._db_enabled and param == 'DB':
+            pass
+        else:
+            return
+
         item = API.getItem()
 
         trailers = item.get('trailers')
@@ -130,7 +139,7 @@ class HDTrailers:
                     API = HDTrailerAPI(url)
                     plot = API.getPlot()
 
-                self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=self._buildArgs('item', item.get('url')))
+                self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=self._buildArgs('item', 'URL', item.get('url')))
 
     def setListLibraryView(self, param, tag=None):
         if not self._db_enabled:
@@ -152,19 +161,28 @@ class HDTrailers:
             url = self._getListUrl(param, tag)
             API = HDTrailerAPI(url)
         else:
-            API = DBAPI(self._db_config, tag)
+            _tag = {
+                'pageNumber': int(tag),
+                'pageSize': self._page_itemCount
+            }
+            API = DBAPI(self._db_config, _tag)
 
         items = API.getItems()
 
         if items is not None:
             for item in items:
                 plot = None
-                if self._extract_plot and param != 'LIBRARY':
-                    _url = self._getUrl(item.get('url'))
-                    _API = HDTrailerAPI(_url)
-                    plot = _API.getPlot()
+                if not self._db_enabled:
+                    if self._extract_plot and param != 'LIBRARY':
+                        _url = self._getUrl(item.get('url'))
+                        _API = HDTrailerAPI(_url)
+                        plot = _API.getPlot()
 
-                self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=self._buildArgs('item', item.get('url')))
+                    self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot,
+                                      args=self._buildArgs('item', 'URL', item.get('url')))
+                else:
+                    self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=item.get('plot'),
+                                      args=self._buildArgs('item', 'DB', item.get('item_id')))
 
         navigation = API.getNavigation()
         if navigation is not None:

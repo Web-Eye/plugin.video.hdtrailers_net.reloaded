@@ -49,8 +49,8 @@ class Addon(xbmcaddon.Addon):
             return {
                 'quality': '2',
                 'extract_plot': 'false',
-                'page_itemCount': '20',
-                'database_enabled': 'false',
+                'page_itemCount': '5',
+                'database_enabled': 'true',
                 'db_host': '192.168.132.143',
                 'db_port': '3306',
                 'db_username': 'kodi',
