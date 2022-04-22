@@ -33,7 +33,7 @@ class Addon(xbmcaddon.Addon):
             return xbmcvfs.translatePath('special://home/addons/' + self._id + '/resources/assets/menu.png')
 
         if not self._debug:
-            return xbmcaddon.Addon.getAddonInfo(name)
+            return xbmcaddon.Addon.getAddonInfo(self, name)
         else:
             if name == 'id':
                 return self._id
@@ -51,7 +51,7 @@ class Addon(xbmcaddon.Addon):
                 'extract_plot': 'false',
                 'page_itemCount': '5',
                 'database_enabled': 'true',
-                'db_host': '192.168.132.143',
+                'db_host': 'fsnas01',
                 'db_port': '3306',
                 'db_username': 'kodi',
                 'db_password': 'kodi'
