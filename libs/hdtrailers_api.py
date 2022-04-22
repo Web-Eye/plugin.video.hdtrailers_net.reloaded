@@ -78,7 +78,9 @@ class HDTrailerAPI:
                         page = 'Previous'
                     elif 'Next' in page:
                         page = 'Next'
-                    lst_nav_items.append({'title': page, 'url': navItem['href']})
+
+                    p = navItem['href'].split('/')
+                    lst_nav_items.append({'title': page, 'tag': p[2]})
 
         if len(lst_nav_items) > 0:
             return json.dumps(lst_nav_items)
@@ -216,7 +218,8 @@ class HDTrailerAPI:
             items = item.find_all(lambda tag: tag.name == 'a' and tag.getText() != 'On' and tag.getText() != 'Off')
             if items is not None:
                 for link in items:
-                    lst_items.append({'title': link.getText(), 'url': link['href']})
+                    p = link['href'].split('/')
+                    lst_items.append({'title': link.getText(), 'tag': p[2]})
 
         return lst_items
 

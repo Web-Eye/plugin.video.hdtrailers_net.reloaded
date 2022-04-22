@@ -125,8 +125,8 @@ class HDTrailers:
         if items is not None:
             for item in items:
                 plot = None
-                if self._extract_plot == 'true' and tag != 'library':
-                    url = urllib.parse.urljoin(self._BASE_URL, item.get('url'))
+                if self._extract_plot == 'true':
+                    url = self._getUrl(item.get('url'))
                     API = HDTrailerAPI(url)
                     plot = API.getPlot()
 
@@ -139,13 +139,13 @@ class HDTrailers:
             items = API.getLibraryLinks()
             if items is not None:
                 for item in items:
-                    self.addDirectory(title=item.get('title'), args=self._buildArgs('list', 'URL', item.get('url')))
+                    self.addDirectory(title=item.get('title'), args=self._buildArgs('list', 'LIBRARY', item.get('tag')))
 
     def setNavView(self, param=None, tag=None):
         if param is not None:
             items = json.loads(param)
             for item in items:
-                self.addDirectory(title=item.get('title'), args=self._buildArgs('list', 'URL', item.get('url')))
+                self.addDirectory(title=item.get('title'), args=self._buildArgs('list', 'NAV', item.get('tag')))
 
     def setListView(self, param, tag=None):
         if not self._db_enabled:
@@ -159,7 +159,7 @@ class HDTrailers:
         if items is not None:
             for item in items:
                 plot = None
-                if self._extract_plot and tag != 'library':
+                if self._extract_plot and param != 'LIBRARY':
                     _url = self._getUrl(item.get('url'))
                     _API = HDTrailerAPI(_url)
                     plot = _API.getPlot()
@@ -193,7 +193,8 @@ class HDTrailers:
         return self._getUrl(
             {
                 'LATEST': urljoin('/page/', str(tag) + "/"),
-                'URL': str(tag),
+                'LIBRARY': urljoin('/poster-library/', str(tag) + "/"),
+                'NAV': urljoin('/page/', str(tag) + "/"),
                 'TOPTEN': '/top-movies/',
                 'OPENING': '/opening-this-week/',
                 'COMINGSOON': '/coming-soon/'
