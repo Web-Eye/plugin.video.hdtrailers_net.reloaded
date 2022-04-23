@@ -9,6 +9,8 @@ class DBAPI:
 
     def __init__(self, db_config, tag):
         self._cnx = None
+        if 'list' in tag:
+            self._list_id = tag['list']
         if 'pageNumber' in tag:
             self._pageNumber = tag['pageNumber']
         if 'pageSize' in tag:
@@ -25,6 +27,14 @@ class DBAPI:
             self._cnx.close()
 
     def getItems(self):
+        return {
+            'LATEST': self._getLatest,
+            'TOPTEN': self._getList,
+            'OPENING': self._getList,
+            'COMING_SOON': self._getList,
+        }[self._list_id](self._list_id)
+
+    def _getLatest(self, list_id):
         query = {
             'project': 'HDTRAILERS',
             'page': self._pageNumber,
@@ -32,6 +42,11 @@ class DBAPI:
         }
 
         return DL_items.getItems(self._cnx, query)
+
+    def _getList(self, list_id):
+        list_id = 'HDT_' + list_id
+
+        return None
 
     def getNavigation(self):
         lst_nav_items = []

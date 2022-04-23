@@ -132,18 +132,22 @@ class HDTrailers:
                 self.addItem(plot, poster, trailer)
 
     def setListMostWatchedView(self, param, tag=None):
-        url = self._getUrl('/most-watched/')
-        API = HDTrailerAPI(url)
-        items = API.getMostWatched(param)
-        if items is not None:
-            for item in items:
-                plot = None
-                if self._extract_plot:
-                    url = self._getUrl(item.get('url'))
-                    API = HDTrailerAPI(url)
-                    plot = API.getPlot()
+        API = None
 
-                self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=self._buildArgs('item', 'URL', item.get('url')))
+        if not self._db_enabled:
+            url = self._getUrl('/most-watched/')
+            API = HDTrailerAPI(url)
+
+            items = API.getMostWatched(param)
+            if items is not None:
+                for item in items:
+                    plot = None
+                    if self._extract_plot:
+                        url = self._getUrl(item.get('url'))
+                        API = HDTrailerAPI(url)
+                        plot = API.getPlot()
+
+                    self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=self._buildArgs('item', 'URL', item.get('url')))
 
     def setListLibraryView(self, param, tag=None):
         if not self._db_enabled:
@@ -158,7 +162,7 @@ class HDTrailers:
         if param is not None:
             items = json.loads(param)
             for item in items:
-                self.addDirectory(title=item.get('title'), args=self._buildArgs('list', 'NAV', item.get('tag')))
+                self.addDirectory(title=item.get('title'), args=self._buildArgs('list', 'LATEST', item.get('tag')))
 
     def setListView(self, param, tag=None):
         if not self._db_enabled:
@@ -166,6 +170,7 @@ class HDTrailers:
             API = HDTrailerAPI(url)
         else:
             _tag = {
+                'list': param,
                 'pageNumber': int(tag),
                 'pageSize': self._page_itemCount
             }
