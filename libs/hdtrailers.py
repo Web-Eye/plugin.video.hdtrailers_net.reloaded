@@ -134,7 +134,7 @@ class HDTrailers:
         if items is not None:
             for item in items:
                 plot = None
-                if self._extract_plot == 'true':
+                if self._extract_plot:
                     url = self._getUrl(item.get('url'))
                     API = HDTrailerAPI(url)
                     plot = API.getPlot()
