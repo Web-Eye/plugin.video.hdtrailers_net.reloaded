@@ -9,8 +9,14 @@ class DBAPI:
 
     def __init__(self, db_config, tag):
         self._cnx = None
-        self._pageNumber = tag['pageNumber']
-        self._pageSize = tag['pageSize']
+        if 'pageNumber' in tag:
+            self._pageNumber = tag['pageNumber']
+        if 'pageSize' in tag:
+            self._pageSize = tag['pageSize']
+        if 'item_id' in tag:
+            self._item_id = tag['item_id']
+        if 'quality_id' in tag:
+            self._quality_id = tag['quality_id']
 
         self._cnx = mysql.connector.Connect(**db_config)
 
@@ -95,4 +101,37 @@ class DBAPI:
             return json.dumps(lst_nav_items)
 
         return None
+
+    def getItem(self):
+        query = {
+            'project': 'HDTRAILERS',
+            'item_id': self._item_id,
+            'quality': ['480p', '720p', '1080p', 'Best'][self._quality_id],
+            'best_quality': self._quality_id == 3
+        }
+
+        trailers = DL_items.getItem(self._cnx, query)
+        if trailers is not None and len(trailers) > 0:
+            trailer_collection = []
+            for trailer in trailers:
+                trailer_collection.append({
+                    'name': trailer['trailer_title'],
+                    'date': trailer['broadcastOn_date'],
+                    'trailer_type': trailer['trailer_tag'],
+                    'link': {
+                        'name': None,
+                        'url': trailer['url'],
+                        'size': trailer['size']
+                    }
+                })
+
+            return {
+                'title': trailers[0]['title'],
+                'plot': trailers[0]['plot'],
+                'poster': trailers[0]['poster'],
+                'trailers': trailer_collection
+            }
+
+
+
 

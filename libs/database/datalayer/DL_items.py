@@ -1,5 +1,6 @@
 from libs.database.database_core import databaseCore
 
+
 class DL_items:
 
     @staticmethod
@@ -42,3 +43,43 @@ class DL_items:
         sQuery = f'SELECT COUNT(*) FROM items WHERE {whereClause};'
 
         return databaseCore.executeScalar(cnx, sQuery, parameter)
+
+
+    @staticmethod
+    def getItem(cnx, query):
+        trailers = []
+        whereClause = 'project = %s AND item_id = %s'
+        parameter = (query['project'], query['item_id'], )
+
+        if query['best_quality']:
+            whereClause += ' AND best_quality = 1'
+        else:
+            whereClause += ' AND quality = %s'
+            parameter += (query['quality'], )
+
+        sQuery = f'SELECT title, plot, poster_url, si_title, si_tag, broadcastOn_date, quality, hoster, size, url ' \
+                 f'   FROM viewItems' \
+                 f'   WHERE {whereClause}' \
+                 f'   ORDER BY si_tag ASC, broadCastOn_date DESC;'
+
+        cursor = databaseCore.executeReader(cnx, sQuery, parameter)
+        if cursor is not None:
+            rows = cursor.fetchall()
+            for row in rows:
+                trailers.append({
+                    'title': str(row[0]),
+                    'plot': str(row[1]),
+                    'poster': str(row[2]),
+                    'trailer_title': str(row[3]),
+                    'trailer_tag': str(row[4]),
+                    'broadcastOn_date': str(row[5]),
+                    'quality': str(row[6]),
+                    'hoster': str(row[7]),
+                    'size': int(row[8]),
+                    'url': str(row[9])
+                })
+
+        cursor.close()
+        return trailers
+
+

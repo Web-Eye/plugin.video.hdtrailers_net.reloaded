@@ -113,7 +113,11 @@ class HDTrailers:
             API = HDTrailerAPI(url, self._quality_id)
 
         elif self._db_enabled and param == 'DB':
-            pass
+            _tag = {
+                'item_id': tag,
+                'quality_id': self._quality_id
+            }
+            API = DBAPI(self._db_config, _tag)
         else:
             return
 
