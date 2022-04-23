@@ -47,9 +47,9 @@ class Addon(xbmcaddon.Addon):
             return xbmcaddon.Addon.getSetting(self, name)
         else:
             return {
-                'quality': '2',
+                'quality': '3',
                 'extract_plot': 'false',
-                'page_itemCount': '5',
+                'page_itemCount': '15',
                 'database_enabled': 'true',
                 'db_host': 'fsnas01',
                 'db_port': '3306',
