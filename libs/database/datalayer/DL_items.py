@@ -1,5 +1,5 @@
 from libs.database.database_core import databaseCore
-
+from libs.tools import tools
 
 class DL_items:
 
@@ -60,23 +60,24 @@ class DL_items:
         sQuery = f'SELECT title, plot, poster_url, si_title, si_tag, broadcastOn_date, quality, hoster, size, url ' \
                  f'   FROM viewItems' \
                  f'   WHERE {whereClause}' \
-                 f'   ORDER BY si_tag ASC, broadCastOn_date DESC;'
+                 f'   ORDER BY subitem_id ASC;'
+                 # f'   ORDER BY si_tag ASC, broadCastOn_date DESC;'
 
         cursor = databaseCore.executeReader(cnx, sQuery, parameter)
         if cursor is not None:
             rows = cursor.fetchall()
             for row in rows:
                 trailers.append({
-                    'title': str(row[0]),
-                    'plot': str(row[1]),
-                    'poster': str(row[2]),
-                    'trailer_title': str(row[3]),
-                    'trailer_tag': str(row[4]),
-                    'broadcastOn_date': str(row[5]),
-                    'quality': str(row[6]),
-                    'hoster': str(row[7]),
-                    'size': int(row[8]),
-                    'url': str(row[9])
+                    'title': tools.estr(row[0]),
+                    'plot': tools.estr(row[1]),
+                    'poster':  tools.estr(row[2]),
+                    'trailer_title':  tools.estr(row[3]),
+                    'trailer_tag':  tools.estr(row[4]),
+                    'broadcastOn_date':  tools.estr(row[5]),
+                    'quality':  tools.estr(row[6]),
+                    'hoster':  tools.estr(row[7]),
+                    'size':  tools.eint(row[8]),
+                    'url':  tools.estr(row[9])
                 })
 
         cursor.close()
