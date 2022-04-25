@@ -132,7 +132,6 @@ class HDTrailers:
                 self.addItem(plot, poster, trailer)
 
     def setListMostWatchedView(self, param, tag=None):
-        API = None
 
         if not self._db_enabled:
             url = self._getUrl('/most-watched/')
@@ -148,6 +147,14 @@ class HDTrailers:
                         plot = API.getPlot()
 
                     self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=self._buildArgs('item', 'URL', item.get('url')))
+
+        else:
+            _param = {
+                'WEEK': 'MOSTWATCHEDWEEK',
+                'TODAY': 'MOSTWATCHEDTODAY'
+            }[param]
+
+            self.setListView(_param, 1)
 
     def setListLibraryView(self, param, tag=None):
         if not self._db_enabled:
@@ -169,6 +176,8 @@ class HDTrailers:
             url = self._getListUrl(param, tag)
             API = HDTrailerAPI(url)
         else:
+            if tag is None:
+                tag = 1
             _tag = {
                 'list': param,
                 'pageNumber': int(tag),

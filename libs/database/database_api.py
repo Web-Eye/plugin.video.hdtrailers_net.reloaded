@@ -3,6 +3,7 @@ import math
 import mysql.connector
 import json
 from libs.database.datalayer.DL_items import DL_items
+from libs.database.datalayer.DL_lists import DL_lists
 
 
 class DBAPI:
@@ -32,9 +33,11 @@ class DBAPI:
             'TOPTEN': self._getList,
             'OPENING': self._getList,
             'COMING_SOON': self._getList,
+            'MOSTWATCHEDWEEK': self._getList,
+            'MOSTWATCHEDTODAY': self._getList
         }[self._list_id](self._list_id)
 
-    def _getLatest(self, list_id):
+    def _getLatest(self):
         query = {
             'project': 'HDTRAILERS',
             'page': self._pageNumber,
@@ -45,8 +48,14 @@ class DBAPI:
 
     def _getList(self, list_id):
         list_id = 'HDT_' + list_id
+        query = {
+            'project': 'HDTRAILERS',
+            'list': list_id,
+            'page': self._pageNumber,
+            'pageSize': self._pageSize
+        }
 
-        return None
+        return DL_lists.getItems(self._cnx, query)
 
     def getNavigation(self):
         lst_nav_items = []
