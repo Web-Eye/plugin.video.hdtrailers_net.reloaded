@@ -10,16 +10,17 @@ class DBAPI:
 
     def __init__(self, db_config, tag):
         self._cnx = None
-        if 'list' in tag:
-            self._list_id = tag['list']
-        if 'pageNumber' in tag:
-            self._pageNumber = tag['pageNumber']
-        if 'pageSize' in tag:
-            self._pageSize = tag['pageSize']
-        if 'item_id' in tag:
-            self._item_id = tag['item_id']
-        if 'quality_id' in tag:
-            self._quality_id = tag['quality_id']
+        if tag is not None:
+            if 'list' in tag:
+                self._list_id = tag['list']
+            if 'pageNumber' in tag:
+                self._pageNumber = tag['pageNumber']
+            if 'pageSize' in tag:
+                self._pageSize = tag['pageSize']
+            if 'item_id' in tag:
+                self._item_id = tag['item_id']
+            if 'quality_id' in tag:
+                self._quality_id = tag['quality_id']
 
         self._cnx = mysql.connector.Connect(**db_config)
 
@@ -30,6 +31,7 @@ class DBAPI:
     def getItems(self):
         return {
             'LATEST': self._getLatest,
+            'LIBRARY': self._getLibrary,
             'TOPTEN': self._getList,
             'OPENING': self._getList,
             'COMING_SOON': self._getList,
@@ -160,6 +162,16 @@ class DBAPI:
                 'trailers': trailer_collection
             }
 
+    def getLibraryLinks(self):
+        return [{'title': '#', 'tag': '0'}, {'title': 'A', 'tag': 'a'}, {'title': 'B', 'tag': 'b'},
+                {'title': 'C', 'tag': 'c'}, {'title': 'D', 'tag': 'd'}, {'title': 'E', 'tag': 'e'},
+                {'title': 'F', 'tag': 'f'}, {'title': 'G', 'tag': 'g'}, {'title': 'H', 'tag': 'h'},
+                {'title': 'I', 'tag': 'i'}, {'title': 'J', 'tag': 'j'}, {'title': 'K', 'tag': 'k'},
+                {'title': 'L', 'tag': 'l'}, {'title': 'M', 'tag': 'm'}, {'title': 'N', 'tag': 'n'},
+                {'title': 'O', 'tag': 'o'}, {'title': 'P', 'tag': 'p'}, {'title': 'Q', 'tag': 'q'},
+                {'title': 'R', 'tag': 'r'}, {'title': 'S', 'tag': 's'}, {'title': 'T', 'tag': 't'},
+                {'title': 'U', 'tag': 'u'}, {'title': 'V', 'tag': 'v'}, {'title': 'W', 'tag': 'w'},
+                {'title': 'X', 'tag': 'x'}, {'title': 'Y', 'tag': 'y'}, {'title': 'Z', 'tag': 'z'}]
 
-
-
+    def _getLibrary(self, tag):
+        pass

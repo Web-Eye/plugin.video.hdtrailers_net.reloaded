@@ -157,13 +157,18 @@ class HDTrailers:
             self.setListView(_param, 1)
 
     def setListLibraryView(self, param, tag=None):
+        API = None
+
         if not self._db_enabled:
             url = self._getUrl('/poster-library/0/')
             API = HDTrailerAPI(url)
-            items = API.getLibraryLinks()
-            if items is not None:
-                for item in items:
-                    self.addDirectory(title=item.get('title'), args=self._buildArgs('list', 'LIBRARY', item.get('tag')))
+        else:
+            API = DBAPI(self._db_config, None)
+
+        items = API.getLibraryLinks()
+        if items is not None:
+            for item in items:
+                self.addDirectory(title=item.get('title'), args=self._buildArgs('list', 'LIBRARY', item.get('tag')))
 
     def setNavView(self, param=None, tag=None):
         if param is not None and tag is not None:
