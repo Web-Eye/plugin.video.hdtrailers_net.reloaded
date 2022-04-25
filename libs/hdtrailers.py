@@ -166,10 +166,10 @@ class HDTrailers:
                     self.addDirectory(title=item.get('title'), args=self._buildArgs('list', 'LIBRARY', item.get('tag')))
 
     def setNavView(self, param=None, tag=None):
-        if param is not None:
-            items = json.loads(param)
+        if param is not None and tag is not None:
+            items = json.loads(tag)
             for item in items:
-                self.addDirectory(title=item.get('title'), args=self._buildArgs('list', 'LATEST', item.get('tag')))
+                self.addDirectory(title=item.get('title'), args=self._buildArgs('list', param=param, tag=item.get('tag')))
 
     def setListView(self, param, tag=None):
         if not self._db_enabled:
@@ -204,7 +204,7 @@ class HDTrailers:
 
         navigation = API.getNavigation()
         if navigation is not None:
-            self.addDirectory(title=self._t.getString(NAVIGATIONS), poster=self._NAVART, args=self._buildArgs('nav', param=navigation))
+            self.addDirectory(title=self._t.getString(NAVIGATIONS), poster=self._NAVART, args=self._buildArgs('nav', param=param,tag=navigation))
 
     def setHomeView(self, param, tag):
         self._guiManager.addDirectory(title=self._t.getString(LATEST), poster=self._ICON,

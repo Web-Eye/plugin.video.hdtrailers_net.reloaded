@@ -36,3 +36,12 @@ class DL_lists:
 
         cursor.close()
         return items
+
+    @staticmethod
+    def getCount(cnx, query):
+        whereClause = 'identifier = %s'
+        parameter = (query['list'],)
+
+        sQuery = f'SELECT COUNT(*) FROM lists WHERE {whereClause};'
+
+        return databaseCore.executeScalar(cnx, sQuery, parameter)

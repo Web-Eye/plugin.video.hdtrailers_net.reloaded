@@ -37,7 +37,7 @@ class DBAPI:
             'MOSTWATCHEDTODAY': self._getList
         }[self._list_id](self._list_id)
 
-    def _getLatest(self):
+    def _getLatest(self, tag):
         query = {
             'project': 'HDTRAILERS',
             'page': self._pageNumber,
@@ -61,10 +61,14 @@ class DBAPI:
         lst_nav_items = []
 
         query = {
-            'project': 'HDTRAILERS'
+            'project': 'HDTRAILERS',
+            'list': self._list_id
         }
 
-        itemCount = DL_items.getCount(self._cnx, query)
+        if self._list_id == 'LATEST':
+            itemCount = DL_items.getCount(self._cnx, query)
+        else:
+            itemCount = DL_lists.getCount(self._cnx, query)
 
         currentPage = self._pageNumber
         firstPage = 1
