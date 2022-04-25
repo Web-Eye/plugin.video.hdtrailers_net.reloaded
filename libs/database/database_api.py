@@ -34,7 +34,7 @@ class DBAPI:
             'LIBRARY': self._getLibrary,
             'TOPTEN': self._getList,
             'OPENING': self._getList,
-            'COMING_SOON': self._getList,
+            'COMINGSOON': self._getList,
             'MOSTWATCHEDWEEK': self._getList,
             'MOSTWATCHEDTODAY': self._getList
         }[self._list_id](self._list_id)
@@ -64,7 +64,7 @@ class DBAPI:
 
         query = {
             'project': 'HDTRAILERS',
-            'list': self._list_id
+            'list': 'HDT_' + self._list_id
         }
 
         if self._list_id == 'LATEST':
