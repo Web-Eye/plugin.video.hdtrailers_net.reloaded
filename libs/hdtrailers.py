@@ -19,6 +19,8 @@ import json
 import sys
 import urllib
 import urllib.parse
+import mysql.connector
+
 from urllib.parse import urljoin
 
 from libs.kodion.addon import Addon
@@ -118,7 +120,11 @@ class HDTrailers:
                 'item_id': tag,
                 'quality_id': self._quality_id
             }
-            API = DBAPI(self._db_config, _tag)
+            try:
+                API = DBAPI(self._db_config, _tag)
+            except mysql.connector.Error as e:
+                self._guiManager.setToastNotification(self._NAME, e.msg, image=self._ICON)
+                return
         else:
             return
 
@@ -164,7 +170,11 @@ class HDTrailers:
             url = self._getUrl('/poster-library/0/')
             API = HDTrailerAPI(url)
         else:
-            API = DBAPI(self._db_config, None)
+            try:
+                API = DBAPI(self._db_config, None)
+            except mysql.connector.Error as e:
+                self._guiManager.setToastNotification(self._NAME, e.msg, image=self._ICON)
+                return
 
         items = API.getLibraryLinks()
         if items is not None:
@@ -195,7 +205,11 @@ class HDTrailers:
                 'pageSize': self._page_itemCount,
                 'tag': tag
             }
-            API = DBAPI(self._db_config, _tag)
+            try:
+                API = DBAPI(self._db_config, _tag)
+            except mysql.connector.Error as e:
+                self._guiManager.setToastNotification(self._NAME, e.msg, image=self._ICON)
+                return
 
         items = API.getItems()
 
