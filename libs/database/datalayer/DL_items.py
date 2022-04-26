@@ -41,6 +41,14 @@ class DL_items:
         whereClause = 'project = %s'
         parameter = (query['project'],)
 
+        tag = query.get('tag')
+        if tag is not None:
+            if tag == '0':
+                whereClause += ' AND title REGEXP \'^[a-z]+\' = 0'
+            else:
+                whereClause += ' AND title LIKE %s'
+                parameter += (tag + '%',)
+
         sQuery = f'SELECT COUNT(*) FROM items WHERE {whereClause};'
 
         return databaseCore.executeScalar(cnx, sQuery, parameter)
@@ -84,4 +92,41 @@ class DL_items:
         cursor.close()
         return trailers
 
+    @staticmethod
+    def getLibraryItems(cnx, query):
+        items = []
+        innerWhereClause = 'project = %s'
+        parameter = (query['project'],)
 
+        tag = query.get('tag')
+        if tag == '0':
+            innerWhereClause += ' AND title REGEXP \'^[a-z]+\' = 0'
+        else:
+            innerWhereClause += ' AND title LIKE %s'
+            parameter += (tag + '%',)
+
+        minItem = (query['page'] - 1) * query['pageSize'] + 1
+        maxItem = minItem + query['pageSize'] - 1
+        parameter += (minItem, maxItem,)
+
+        sQuery = f'   SELECT * FROM (' \
+                 f'      SELECT ROW_NUMBER() OVER (ORDER BY title ASC) AS rowNumber, items.item_id' \
+                 f'            ,items.title, items.plot, items.poster_url' \
+                 f'      FROM items' \
+                 f'      WHERE {innerWhereClause}' \
+                 f'   ) AS t' \
+                 f'   WHERE t.rowNumber BETWEEN %s AND %s;'
+
+        cursor = databaseCore.executeReader(cnx, sQuery, parameter)
+        if cursor is not None:
+            rows = cursor.fetchall()
+            for row in rows:
+                items.append({
+                    'item_id': int(row[1]),
+                    'title': str(row[2]),
+                    'plot': str(row[3]),
+                    'poster': str(row[4])
+                })
+
+        cursor.close()
+        return items

@@ -105,8 +105,9 @@ class HDTrailers:
         except NameError:
             pass
 
-    def setItemView(self, param, tag=None):
-        API = None
+    def setItemView(self, **kwargs):
+        param = kwargs.get('param')
+        tag = kwargs.get('tag')
 
         if not self._db_enabled and param == 'URL':
             url = self._getUrl(tag)
@@ -131,7 +132,8 @@ class HDTrailers:
             for trailer in trailers:
                 self.addItem(plot, poster, trailer)
 
-    def setListMostWatchedView(self, param, tag=None):
+    def setListMostWatchedView(self, **kwargs):
+        param = kwargs.get('param')
 
         if not self._db_enabled:
             url = self._getUrl('/most-watched/')
@@ -146,7 +148,7 @@ class HDTrailers:
                         API = HDTrailerAPI(url)
                         plot = API.getPlot()
 
-                    self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=self._buildArgs('item', 'URL', item.get('url')))
+                    self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=self._buildArgs(method='item', param='URL', tag=item.get('url')))
 
         else:
             _param = {
@@ -154,10 +156,9 @@ class HDTrailers:
                 'TODAY': 'MOSTWATCHEDTODAY'
             }[param]
 
-            self.setListView(_param, 1)
+            self.setListView(param=_param, page=1)
 
-    def setListLibraryView(self, param, tag=None):
-        API = None
+    def setListLibraryView(self, **kwargs):
 
         if not self._db_enabled:
             url = self._getUrl('/poster-library/0/')
@@ -168,25 +169,31 @@ class HDTrailers:
         items = API.getLibraryLinks()
         if items is not None:
             for item in items:
-                self.addDirectory(title=item.get('title'), args=self._buildArgs('list', 'LIBRARY', item.get('tag')))
+                self.addDirectory(title=item.get('title'), args=self._buildArgs(method='list', param='LIBRARY', tag=item.get('tag')))
 
-    def setNavView(self, param=None, tag=None):
+    def setNavView(self, **kwargs):
+        param = kwargs.get('param')
+        tag = kwargs.get('tag')
         if param is not None and tag is not None:
             items = json.loads(tag)
             for item in items:
-                self.addDirectory(title=item.get('title'), args=self._buildArgs('list', param=param, tag=item.get('tag')))
+                self.addDirectory(title=item.get('title'), args=self._buildArgs(method='list', param=param, page=item.get('tag')))
 
-    def setListView(self, param, tag=None):
+    def setListView(self, **kwargs):
+        param = kwargs.get('param')
+        page = kwargs.get('page')
+        tag = kwargs.get('tag')
+        if page is None:
+            page = 1
         if not self._db_enabled:
-            url = self._getListUrl(param, tag)
+            url = self._getListUrl(param, page, tag)
             API = HDTrailerAPI(url)
         else:
-            if tag is None:
-                tag = 1
             _tag = {
                 'list': param,
-                'pageNumber': int(tag),
-                'pageSize': self._page_itemCount
+                'pageNumber': int(page),
+                'pageSize': self._page_itemCount,
+                'tag': tag
             }
             API = DBAPI(self._db_config, _tag)
 
@@ -202,40 +209,40 @@ class HDTrailers:
                         plot = _API.getPlot()
 
                     self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot,
-                                      args=self._buildArgs('item', 'URL', item.get('url')))
+                                      args=self._buildArgs(method='item', param='URL', tag=item.get('url')))
                 else:
                     self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=item.get('plot'),
-                                      args=self._buildArgs('item', 'DB', item.get('item_id')))
+                                      args=self._buildArgs(method='item', param='DB', tag=item.get('item_id')))
 
         navigation = API.getNavigation()
         if navigation is not None:
-            self.addDirectory(title=self._t.getString(NAVIGATIONS), poster=self._NAVART, args=self._buildArgs('nav', param=param,tag=navigation))
+            self.addDirectory(title=self._t.getString(NAVIGATIONS), poster=self._NAVART, args=self._buildArgs(method='nav', param=param, tag=navigation))
 
-    def setHomeView(self, param, tag):
+    def setHomeView(self, **args):
         self._guiManager.addDirectory(title=self._t.getString(LATEST), poster=self._ICON,
-                                      args=self._buildArgs('list', 'LATEST', 1))
+                                      args=self._buildArgs(method='list', param='LATEST'))
         self._guiManager.addDirectory(title=self._t.getString(LIBRARY), poster=self._ICON,
-                                      args=self._buildArgs('list_library'))
+                                      args=self._buildArgs(method='list_library'))
         self._guiManager.addDirectory(title=self._t.getString(MOST_WATCHED_WEEK), poster=self._ICON,
-                                      args=self._buildArgs('list_most_watched', 'WEEK'))
+                                      args=self._buildArgs(method='list_most_watched', param='WEEK'))
         self._guiManager.addDirectory(title=self._t.getString(MOST_WATCHED_TODAY), poster=self._ICON,
-                                      args=self._buildArgs('list_most_watched', 'TODAY'))
+                                      args=self._buildArgs(method='list_most_watched', param='TODAY'))
         self._guiManager.addDirectory(title=self._t.getString(TOP_MOVIES), poster=self._ICON,
-                                      args=self._buildArgs('list', 'TOPTEN'))
+                                      args=self._buildArgs(method='list', param='TOPTEN'))
         self._guiManager.addDirectory(title=self._t.getString(OPENING_THIS_WEEK), poster=self._ICON,
-                                      args=self._buildArgs('list', 'OPENING'))
+                                      args=self._buildArgs(method='list', param='OPENING'))
         self._guiManager.addDirectory(title=self._t.getString(COMING_SOON), poster=self._ICON,
-                                      args=self._buildArgs('list', 'COMINGSOON'))
+                                      args=self._buildArgs(method='list', param='COMINGSOON'))
 
     def _getUrl(self, url):
         return urllib.parse.urljoin(self._BASE_URL, url)
 
-    def _getListUrl(self, param, tag):
+    def _getListUrl(self, param, page, tag):
         return self._getUrl(
             {
-                'LATEST': urljoin('/page/', str(tag) + "/"),
+                'LATEST': urljoin('/page/', str(page) + "/"),
                 'LIBRARY': urljoin('/poster-library/', str(tag) + "/"),
-                'NAV': urljoin('/page/', str(tag) + "/"),
+                'NAV': urljoin('/page/', str(page) + "/"),
                 'TOPTEN': '/top-movies/',
                 'OPENING': '/opening-this-week/',
                 'COMINGSOON': '/coming-soon/'
@@ -243,18 +250,8 @@ class HDTrailers:
         )
 
     @staticmethod
-    def _buildArgs(method, param=None, tag=None):
-        retValue = {
-            'method': method
-        }
-
-        if param is not None:
-            retValue['param'] = param
-
-        if tag is not None:
-            retValue['tag'] = tag
-
-        return retValue
+    def _buildArgs(**kwargs):
+        return kwargs
 
     @staticmethod
     def _get_query_args(s_args):
@@ -269,10 +266,11 @@ class HDTrailers:
         args = self._get_query_args(sys.argv[2])
 
         if args is None or args.__len__() == 0:
-            args = self._buildArgs('home')
+            args = self._buildArgs(method='home')
 
         method = args.get('method')
         param = args.get('param')
+        page = args.get('page')
         tag = args.get('tag')
 
         {
@@ -282,6 +280,6 @@ class HDTrailers:
             'list_library': self.setListLibraryView,
             'list_most_watched': self.setListMostWatchedView,
             'item': self.setItemView
-        }[method](param, tag)
+        }[method](param=param, page=page, tag=tag)
 
         self._guiManager.endOfDirectory()

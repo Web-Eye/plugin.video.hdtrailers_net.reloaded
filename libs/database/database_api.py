@@ -11,16 +11,12 @@ class DBAPI:
     def __init__(self, db_config, tag):
         self._cnx = None
         if tag is not None:
-            if 'list' in tag:
-                self._list_id = tag['list']
-            if 'pageNumber' in tag:
-                self._pageNumber = tag['pageNumber']
-            if 'pageSize' in tag:
-                self._pageSize = tag['pageSize']
-            if 'item_id' in tag:
-                self._item_id = tag['item_id']
-            if 'quality_id' in tag:
-                self._quality_id = tag['quality_id']
+            self._list_id = tag.get('list')
+            self._pageNumber = tag.get('pageNumber')
+            self._pageSize = tag.get('pageSize')
+            self._item_id = tag.get('item_id')
+            self._quality_id = tag.get('quality_id')
+            self._tag = tag.get('tag')
 
         self._cnx = mysql.connector.Connect(**db_config)
 
@@ -64,13 +60,17 @@ class DBAPI:
 
         query = {
             'project': 'HDTRAILERS',
-            'list': 'HDT_' + self._list_id
+            'list': 'HDT_' + self._list_id,
+            'tag': self._tag
         }
 
-        if self._list_id == 'LATEST':
+        if self._list_id == 'LATEST' or self._list_id == 'LIBRARY':
             itemCount = DL_items.getCount(self._cnx, query)
         else:
             itemCount = DL_lists.getCount(self._cnx, query)
+
+        if itemCount == 0:
+            return None
 
         currentPage = self._pageNumber
         firstPage = 1
@@ -174,4 +174,11 @@ class DBAPI:
                 {'title': 'X', 'tag': 'x'}, {'title': 'Y', 'tag': 'y'}, {'title': 'Z', 'tag': 'z'}]
 
     def _getLibrary(self, tag):
-        pass
+        query = {
+            'project': 'HDTRAILERS',
+            'page': self._pageNumber,
+            'pageSize': self._pageSize,
+            'tag': self._tag
+        }
+
+        return DL_items.getLibraryItems(self._cnx, query)
