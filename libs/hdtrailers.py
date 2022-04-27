@@ -187,6 +187,7 @@ class HDTrailers:
         if param is not None and tag is not None:
             items = json.loads(tag)
             for item in items:
+                # TODO: here i need a valid tag for library pages
                 self.addDirectory(title=item.get('title'), args=self._buildArgs(method='list', param=param, page=item.get('tag')))
 
     def setListView(self, **kwargs):
