@@ -127,8 +127,6 @@ class DBAPI:
         if lastPage is not None:
             lst_nav_items.append({'title': 'Last', 'tag': lastPage})
 
-        # TODO add self._tag to returnvalue
-
         if len(lst_nav_items) > 0:
             return json.dumps(lst_nav_items)
 

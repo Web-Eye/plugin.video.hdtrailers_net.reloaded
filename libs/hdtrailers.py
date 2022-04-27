@@ -154,7 +154,9 @@ class HDTrailers:
                         API = HDTrailerAPI(url)
                         plot = API.getPlot()
 
-                    self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=plot, args=self._buildArgs(method='item', param='URL', tag=item.get('url')))
+                    self.addDirectory(title=item.get('title'),
+                                      poster=item.get('poster'),
+                                      plot=plot, args=self._buildArgs(method='item', param='URL', tag=item.get('url')))
 
         else:
             _param = {
@@ -179,16 +181,18 @@ class HDTrailers:
         items = API.getLibraryLinks()
         if items is not None:
             for item in items:
-                self.addDirectory(title=item.get('title'), args=self._buildArgs(method='list', param='LIBRARY', tag=item.get('tag')))
+                self.addDirectory(title=item.get('title'),
+                                  args=self._buildArgs(method='list', param='LIBRARY', tag=item.get('tag')))
 
     def setNavView(self, **kwargs):
         param = kwargs.get('param')
         tag = kwargs.get('tag')
-        if param is not None and tag is not None:
-            items = json.loads(tag)
+        nav = kwargs.get('navigation')
+        if param is not None and nav is not None:
+            items = json.loads(nav)
             for item in items:
-                # TODO: here i need a valid tag for library pages
-                self.addDirectory(title=item.get('title'), args=self._buildArgs(method='list', param=param, page=item.get('tag')))
+                self.addDirectory(title=item.get('title'),
+                                  args=self._buildArgs(method='list', param=param, tag=tag, page=item.get('tag')))
 
     def setListView(self, **kwargs):
         param = kwargs.get('param')
@@ -231,7 +235,9 @@ class HDTrailers:
 
         navigation = API.getNavigation()
         if navigation is not None:
-            self.addDirectory(title=self._t.getString(NAVIGATIONS), poster=self._NAVART, args=self._buildArgs(method='nav', param=param, tag=navigation))
+            self.addDirectory(title=self._t.getString(NAVIGATIONS),
+                              poster=self._NAVART,
+                              args=self._buildArgs(method='nav', param=param, tag=tag, navigation=navigation))
 
     def setHomeView(self, **args):
         self._guiManager.addDirectory(title=self._t.getString(LATEST), poster=self._ICON,
@@ -266,7 +272,30 @@ class HDTrailers:
 
     @staticmethod
     def _buildArgs(**kwargs):
-        return kwargs
+        method = kwargs.get('method')
+        param = kwargs.get('param')
+        page = kwargs.get('page')
+        tag = kwargs.get('tag')
+        navigation = kwargs.get('navigation')
+
+        args = {
+            'method': method
+        }
+
+        if param is not None:
+            args['param'] = param
+
+        if page is not None:
+            args['page'] = page
+
+        if tag is not None:
+            args['tag'] = tag
+
+        if navigation is not None:
+            args['navigation'] = navigation
+
+        return args
+
 
     @staticmethod
     def _get_query_args(s_args):
@@ -287,6 +316,7 @@ class HDTrailers:
         param = args.get('param')
         page = args.get('page')
         tag = args.get('tag')
+        navigation = args.get('navigation')
 
         {
             'home': self.setHomeView,
@@ -295,6 +325,6 @@ class HDTrailers:
             'list_library': self.setListLibraryView,
             'list_most_watched': self.setListMostWatchedView,
             'item': self.setItemView
-        }[method](param=param, page=page, tag=tag)
+        }[method](param=param, page=page, tag=tag, navigation=navigation)
 
         self._guiManager.endOfDirectory()
