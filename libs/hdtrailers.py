@@ -142,10 +142,15 @@ class HDTrailers:
         param = kwargs.get('param')
 
         if not self._db_enabled:
+            _param = {
+                'MOSTWATCHEDWEEK': 'WEEK',
+                'MOSTWATCHEDTODAY': 'TODAY'
+            }[param]
+
             url = self._getUrl('/most-watched/')
             API = HDTrailerAPI(url)
 
-            items = API.getMostWatched(param)
+            items = API.getMostWatched(_param)
             if items is not None:
                 for item in items:
                     plot = None
@@ -201,8 +206,12 @@ class HDTrailers:
         if page is None:
             page = 1
         if not self._db_enabled:
-            url = self._getListUrl(param, page, tag)
-            API = HDTrailerAPI(url)
+            if 'MOSTWATCHED' not in param:
+                url = self._getListUrl(param, page, tag)
+                API = HDTrailerAPI(url)
+            else:
+                self.setListMostWatchedView(**kwargs)
+                return
         else:
             _tag = {
                 'list': param,
@@ -245,9 +254,9 @@ class HDTrailers:
         self._guiManager.addDirectory(title=self._t.getString(LIBRARY), poster=self._ICON,
                                       args=self._buildArgs(method='list_library'))
         self._guiManager.addDirectory(title=self._t.getString(MOST_WATCHED_WEEK), poster=self._ICON,
-                                      args=self._buildArgs(method='list_most_watched', param='WEEK'))
+                                      args=self._buildArgs(method='list', param='MOSTWATCHEDWEEK'))
         self._guiManager.addDirectory(title=self._t.getString(MOST_WATCHED_TODAY), poster=self._ICON,
-                                      args=self._buildArgs(method='list_most_watched', param='TODAY'))
+                                      args=self._buildArgs(method='list', param='MOSTWATCHEDTODAY'))
         self._guiManager.addDirectory(title=self._t.getString(TOP_MOVIES), poster=self._ICON,
                                       args=self._buildArgs(method='list', param='TOPTEN'))
         self._guiManager.addDirectory(title=self._t.getString(OPENING_THIS_WEEK), poster=self._ICON,
