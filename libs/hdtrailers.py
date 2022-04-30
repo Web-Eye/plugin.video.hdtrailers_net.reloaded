@@ -26,6 +26,7 @@ from urllib.parse import urljoin
 from libs.kodion.addon import Addon
 from libs.database.database_api import DBAPI
 from libs.kodion.gui_manager import *
+from libs.tools import tools
 from libs.translations import *
 from libs.hdtrailers_api import HDTrailerAPI
 
@@ -76,7 +77,7 @@ class HDTrailers:
             if link is not None:
 
                 title = str(trailer.get('name'))
-                date = trailer.get('date')
+                date = tools.convertDateTime(trailer.get('date'), '%Y-%m-%d %H:%M:%S', '%Y-%m-%d')
 
                 infoLabels = {
                     'Title': title,
