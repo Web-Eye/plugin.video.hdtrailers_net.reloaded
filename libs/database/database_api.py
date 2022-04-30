@@ -179,7 +179,8 @@ class DBAPI:
                 'trailers': trailer_collection
             }
 
-    def getLibraryLinks(self):
+    @staticmethod
+    def getLibraryLinks():
         return [{'title': '#', 'tag': '0'}, {'title': 'A', 'tag': 'a'}, {'title': 'B', 'tag': 'b'},
                 {'title': 'C', 'tag': 'c'}, {'title': 'D', 'tag': 'd'}, {'title': 'E', 'tag': 'e'},
                 {'title': 'F', 'tag': 'f'}, {'title': 'G', 'tag': 'g'}, {'title': 'H', 'tag': 'h'},
