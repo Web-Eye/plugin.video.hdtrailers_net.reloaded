@@ -32,9 +32,9 @@ class DL_items:
         parameter += (minItem, maxItem, )
 
         sQuery = f'   SELECT * FROM (' \
-                 f'      SELECT ROW_NUMBER() OVER (ORDER BY order_date DESC, item_id ASC) AS rowNumber, items.item_id' \
-                 f'            ,items.title, items.plot, items.poster_url' \
-                 f'      FROM items' \
+                 f'      SELECT ROW_NUMBER() OVER (ORDER BY order_date DESC, item_id ASC) AS rowNumber' \
+                 f'            ,viewItems.item_id ,viewItems.title, viewItems.plot, viewItems.poster_url' \
+                 f'      FROM viewItems' \
                  f'      WHERE {innerWhereClause}' \
                  f'   ) AS t' \
                  f'   WHERE t.rowNumber BETWEEN %s AND %s;'
@@ -50,7 +50,7 @@ class DL_items:
                     'poster': str(row[4])
                 })
 
-        cursor.close()
+            cursor.close()
         return items
 
     @staticmethod
@@ -66,7 +66,7 @@ class DL_items:
                 whereClause += ' AND title LIKE %s'
                 parameter += (tag + '%',)
 
-        sQuery = f'SELECT COUNT(*) FROM items WHERE {whereClause};'
+        sQuery = f'SELECT COUNT(*) FROM viewItems WHERE {whereClause};'
 
         return databaseCore.executeScalar(cnx, sQuery, parameter)
 
@@ -83,7 +83,7 @@ class DL_items:
             parameter += (query['quality'], )
 
         sQuery = f'SELECT title, plot, poster_url, si_title, si_tag, broadcastOn_date, quality, hoster, size, url ' \
-                 f'   FROM viewItems' \
+                 f'   FROM viewItemLinks' \
                  f'   WHERE {whereClause}' \
                  f'   ORDER BY subitem_id ASC;'
 
@@ -104,7 +104,7 @@ class DL_items:
                     'url':  tools.estr(row[9])
                 })
 
-        cursor.close()
+            cursor.close()
         return trailers
 
     @staticmethod
@@ -125,9 +125,9 @@ class DL_items:
         parameter += (minItem, maxItem,)
 
         sQuery = f'   SELECT * FROM (' \
-                 f'      SELECT ROW_NUMBER() OVER (ORDER BY title ASC) AS rowNumber, items.item_id' \
-                 f'            ,items.title, items.plot, items.poster_url' \
-                 f'      FROM items' \
+                 f'      SELECT ROW_NUMBER() OVER (ORDER BY title ASC) AS rowNumber, viewItems.item_id' \
+                 f'            ,viewItems.title, viewItems.plot, viewItems.poster_url' \
+                 f'      FROM viewItems' \
                  f'      WHERE {innerWhereClause}' \
                  f'   ) AS t' \
                  f'   WHERE t.rowNumber BETWEEN %s AND %s;'
@@ -143,5 +143,5 @@ class DL_items:
                     'poster': str(row[4])
                 })
 
-        cursor.close()
+            cursor.close()
         return items
