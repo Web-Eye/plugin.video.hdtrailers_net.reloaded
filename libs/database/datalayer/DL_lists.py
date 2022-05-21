@@ -50,7 +50,7 @@ class DL_lists:
                     'poster': str(row[3])
                 })
 
-        cursor.close()
+            cursor.close()
         return items
 
     @staticmethod
