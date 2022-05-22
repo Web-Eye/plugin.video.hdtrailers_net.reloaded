@@ -23,8 +23,8 @@ class DL_lists:
     @staticmethod
     def getItems(cnx, query):
         items = []
-        innerWhereClause = 'l.identifier = %s'
-        parameter = (query['list'],)
+        innerWhereClause = 'l.project = %s AND l.identifier = %s'
+        parameter = (query['project'], query['list'], )
 
         minItem = (query['page'] - 1) * query['pageSize'] + 1
         maxItem = minItem + query['pageSize'] - 1
@@ -33,7 +33,7 @@ class DL_lists:
         sQuery = f'   SELECT item_id, title, plot, poster_url FROM (' \
                  f'      SELECT ROW_NUMBER() OVER (ORDER BY order_id ASC) AS rowNumber, i.item_id' \
                  f'            ,i.title, i.plot, i.poster_url' \
-                 f'      FROM lists AS l' \
+                 f'      FROM viewLists AS l' \
                  f'      LEFT JOIN items AS i ON l.item_id = i.item_id' \
                  f'      WHERE {innerWhereClause} ' \
                  f'   ) AS t' \
@@ -55,9 +55,9 @@ class DL_lists:
 
     @staticmethod
     def getCount(cnx, query):
-        whereClause = 'identifier = %s'
-        parameter = (query['list'],)
+        whereClause = 'project = %s AND identifier = %s'
+        parameter = (query['project'], query['list'],)
 
-        sQuery = f'SELECT COUNT(*) FROM lists WHERE {whereClause};'
+        sQuery = f'SELECT COUNT(*) FROM viewLists WHERE {whereClause};'
 
         return databaseCore.executeScalar(cnx, sQuery, parameter)

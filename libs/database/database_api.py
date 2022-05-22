@@ -62,7 +62,6 @@ class DBAPI:
         return DL_items.getItems(self._cnx, query)
 
     def _getList(self, list_id):
-        list_id = 'HDT_' + list_id
         query = {
             'project': 'HDTRAILERS',
             'list': list_id,
@@ -77,7 +76,7 @@ class DBAPI:
 
         query = {
             'project': 'HDTRAILERS',
-            'list': 'HDT_' + self._list_id,
+            'list': self._list_id,
             'tag': self._tag
         }
 
