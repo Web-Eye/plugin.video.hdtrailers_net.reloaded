@@ -53,6 +53,7 @@ class DBAPI:
         }[self._list_id](self._list_id)
 
     def _getLatest(self, tag):
+        _tag = tag
         query = {
             'project': 'HDTRAILERS',
             'page': self._pageNumber,
@@ -191,6 +192,7 @@ class DBAPI:
                 {'title': 'X', 'tag': 'x'}, {'title': 'Y', 'tag': 'y'}, {'title': 'Z', 'tag': 'z'}]
 
     def _getLibrary(self, tag):
+        _tag = tag
         query = {
             'project': 'HDTRAILERS',
             'page': self._pageNumber,

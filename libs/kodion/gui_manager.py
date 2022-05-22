@@ -103,5 +103,6 @@ class GuiManager:
     def endOfDirectory(self):
         xbmcplugin.endOfDirectory(self._argv)
 
-    def setToastNotification(self, header, message, time=5000, image=None):
+    @staticmethod
+    def setToastNotification(header, message, time=5000, image=None):
         xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (header, message, time, image))

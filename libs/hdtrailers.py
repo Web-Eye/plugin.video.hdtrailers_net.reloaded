@@ -173,6 +173,7 @@ class HDTrailers:
             self.setListView(param=_param, page=1)
 
     def setListLibraryView(self, **kwargs):
+        _kwargs = kwargs
 
         if not self._db_enabled:
             url = self._getUrl('/poster-library/0/')
@@ -250,6 +251,8 @@ class HDTrailers:
                               args=self._buildArgs(method='nav', param=param, tag=tag, navigation=navigation))
 
     def setHomeView(self, **args):
+        _args = args
+
         self._guiManager.addDirectory(title=self._t.getString(LATEST), poster=self._ICON,
                                       args=self._buildArgs(method='list', param='LATEST'))
         self._guiManager.addDirectory(title=self._t.getString(LIBRARY), poster=self._ICON,
@@ -305,7 +308,6 @@ class HDTrailers:
             args['navigation'] = navigation
 
         return args
-
 
     @staticmethod
     def _get_query_args(s_args):

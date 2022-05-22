@@ -48,7 +48,8 @@ class HDTrailerAPI:
         if quality_id is not None:
             self.__quality = ['480p', '720p', '1080p', 'Best'][int(quality_id)]
 
-    def __getItems(self, content):
+    @staticmethod
+    def __getItems(content):
         lst_items = []
         items = content.find_all('td', class_='indexTableTrailerImage')
         if items is not None:
@@ -87,7 +88,8 @@ class HDTrailerAPI:
 
         return None
 
-    def __getPlot(self, info):
+    @staticmethod
+    def __getPlot(info):
         if info is not None:
             plot_block = info.find('p', class_='previewDescription')
             if plot_block is not None:
@@ -109,10 +111,13 @@ class HDTrailerAPI:
             poster = urllib.parse.urljoin("http:", info.find('img')['src'])
 
         link_block = self.__content.find('table', class_='bottomTable')
-        link_content = link_block.find_all(lambda tag: (tag.name == 'tr' and tag.has_attr('itemprop') and tag['itemprop'] == 'trailer') or
-                                                       (tag.name == 'td' and tag.has_attr('class') and tag['class'][0] == 'bottomTableSet') or
-                                                       (tag.name == 'td' and tag.has_attr('class') and tag['class'][0] == 'bottomTableFileSize')
-                                          )
+        link_content = link_block.find_all(lambda tag: (tag.name == 'tr' and tag.has_attr('itemprop') and
+                                                        tag['itemprop'] == 'trailer') or
+                                                       (tag.name == 'td' and tag.has_attr('class') and
+                                                        tag['class'][0] == 'bottomTableSet') or
+                                                       (tag.name == 'td' and tag.has_attr('class') and
+                                                        tag['class'][0] == 'bottomTableFileSize')
+                                           )
 
         trailer_type = 'Trailers'
         trailer_name = ''
@@ -145,7 +150,8 @@ class HDTrailerAPI:
                         link_item = link_collection[0]
 
                     if link_item is not None:
-                        trailer_collection.append({'name': trailer_name, 'date': trailer_date, 'trailer_type': trailer_type, 'link': link_item})
+                        trailer_collection.append({'name': trailer_name, 'date': trailer_date,
+                                                   'trailer_type': trailer_type, 'link': link_item})
 
                 link_collection = []
                 i = 0
@@ -185,7 +191,8 @@ class HDTrailerAPI:
                 link_item = link_collection[0]
 
             if link_item is not None:
-                trailer_collection.append({'name': trailer_name, 'date': trailer_date, 'trailer_type': trailer_type, 'link': link_item})
+                trailer_collection.append({'name': trailer_name, 'date': trailer_date, 'trailer_type': trailer_type,
+                                           'link': link_item})
 
         movie_item = {'title': title, 'plot': plot, 'poster': poster, 'trailers': trailer_collection}
         return movie_item
@@ -222,4 +229,3 @@ class HDTrailerAPI:
                     lst_items.append({'title': link.getText(), 'tag': p[2]})
 
         return lst_items
-
