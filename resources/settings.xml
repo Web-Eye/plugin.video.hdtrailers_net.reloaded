@@ -22,6 +22,10 @@
                     <default>false</default>
                     <control type="toggle"/>
                 </setting>
+                <setting id="simplified_navigation" type="boolean" label="30128" help="">
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
                 <setting id="page_itemCount" label="30121" type="integer">
                     <dependencies>
                         <dependency type="enable" setting="database_enabled">true</dependency>
