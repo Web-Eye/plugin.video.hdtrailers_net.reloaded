@@ -67,6 +67,7 @@ class HDTrailerAPI:
 
     def getNavigation(self):
         lst_nav_items = []
+        next_page = None
         navigation = self.__content.find('div', class_='libraryLinks nav-links-top')
         if navigation is not None:
             nav_items = navigation.find_all('a', class_='startLink')
@@ -82,11 +83,13 @@ class HDTrailerAPI:
 
                     p = navItem['href'].split('/')
                     lst_nav_items.append({'title': page, 'tag': p[2]})
+                    if page == 'Next':
+                        next_page = p[2]
 
         if len(lst_nav_items) > 0:
-            return json.dumps(lst_nav_items)
+            return json.dumps(lst_nav_items), next_page
 
-        return None
+        return None, None
 
     @staticmethod
     def __getPlot(info):

@@ -45,6 +45,7 @@ class HDTrailers:
         self._FANART = addon.getAddonInfo('fanart')
         self._ICON = addon.getAddonInfo('icon')
         self._NAVART = addon.getAddonInfo('navart')
+        self._NEXTPAGE = addon.getAddonInfo('nextpage')
         self._BASE_URL = 'http://www.hd-trailers.net/'
         self._POSTERWIDTH = int(width / 3)
         self._DEFAULT_IMAGE_URL = ''
@@ -53,6 +54,7 @@ class HDTrailers:
         # -- settings ----------------------------------------------
         self._quality_id = int(addon.getSetting('quality'))
         self._extract_plot = (addon.getSetting('extract_plot') == 'true')
+        self._simplified_navigation = (addon.getSetting('simplified_navigation') == 'true')
         self._page_itemCount = int(addon.getSetting('page_itemCount'))
 
         self._db_enabled = (addon.getSetting('database_enabled') == 'true')
@@ -244,11 +246,17 @@ class HDTrailers:
                     self.addDirectory(title=item.get('title'), poster=item.get('poster'), plot=item.get('plot'),
                                       args=self._buildArgs(method='item', param='DB', tag=item.get('item_id')))
 
-        navigation = API.getNavigation()
-        if navigation is not None:
-            self.addDirectory(title=self._t.getString(NAVIGATIONS),
-                              poster=self._NAVART,
-                              args=self._buildArgs(method='nav', param=param, tag=tag, navigation=navigation))
+        navigation, next_page = API.getNavigation()
+        if not self._simplified_navigation:
+            if navigation is not None:
+                self.addDirectory(title=self._t.getString(NAVIGATIONS),
+                                  poster=self._NAVART,
+                                  args=self._buildArgs(method='nav', param=param, tag=tag, navigation=navigation))
+
+        else:
+            if next_page is not None:
+                self.addDirectory(title='Next Page', poster=self._NEXTPAGE,
+                                  args=self._buildArgs(method='list', param=param, tag=tag, page=next_page))
 
     def setHomeView(self, **args):
         _args = args

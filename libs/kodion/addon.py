@@ -32,6 +32,9 @@ class Addon(xbmcaddon.Addon):
         if name == 'navart':
             return xbmcvfs.translatePath('special://home/addons/' + self._id + '/resources/assets/menu.png')
 
+        if name == 'nextpage':
+            return xbmcvfs.translatePath('special://home/addons/' + self._id + '/resources/assets/next.png')
+
         if not self._debug:
             return xbmcaddon.Addon.getAddonInfo(self, name)
         else:
@@ -54,5 +57,6 @@ class Addon(xbmcaddon.Addon):
                 'db_host': 'fsnas01',
                 'db_port': '3306',
                 'db_username': 'kodi',
-                'db_password': 'kodi'
+                'db_password': 'kodi',
+                'simplified_navigation': 'true'
             }[name]

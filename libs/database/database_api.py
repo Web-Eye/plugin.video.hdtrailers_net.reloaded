@@ -145,9 +145,9 @@ class DBAPI:
             lst_nav_items.append({'title': 'Last', 'tag': lastPage})
 
         if len(lst_nav_items) > 0:
-            return json.dumps(lst_nav_items)
+            return json.dumps(lst_nav_items), nextPage
 
-        return None
+        return None, None
 
     def getItem(self):
         query = {
