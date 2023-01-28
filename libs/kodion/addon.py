@@ -58,5 +58,6 @@ class Addon(xbmcaddon.Addon):
                 'db_port': '3306',
                 'db_username': 'kodi',
                 'db_password': 'kodi',
+                'db_databasename': 'KodiWebGrabber_Test',
                 'simplified_navigation': 'true'
             }[name]

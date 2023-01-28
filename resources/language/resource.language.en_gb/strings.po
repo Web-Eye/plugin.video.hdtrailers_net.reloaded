@@ -139,3 +139,7 @@ msgstr ""
 msgctxt "#30128"
 msgid "Simplified navigation"
 msgstr ""
+
+msgctxt "#30129"
+msgid "Database"
+msgstr ""
